@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 })
 
-io.on('connection', (socket) => {// connexion web - node
+io.on('connection', (socket) => {// connexion web - node 
     const client = new net.Socket(); // connexion node - rust
 
     console.log('Nouvelle connexion');
