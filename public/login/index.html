@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <title>City Project - Se connecter</title>
+</head>
+<body>
+    <form method="post" action="/login" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="username" id="username" value="user" placeholder="Username" />
+
+        <input type="text" name="password" id="password" value="password" placeholder="Password" />
+
+        <input type="submit" value="Se connecter" />
+    </form>
+
+    <style>
+        html {
+            background-color: black;
+        }
+    </style>
+
+    <script>
+        $(function() {
+            $('form').submit(function(e) {
+                e.preventDefault()
+
+                $.ajax({
+                    url: '/login',
+                    method: 'POST',
+                    data: {
+                        username: $('#username').val(),
+                        password: $('#password').val()
+                    },
+                    success: function(data) {
+                        document.location.href = '/game'
+                    },
+                    error: function(err) {
+                        console.log(err)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

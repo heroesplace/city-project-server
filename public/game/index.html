@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <canvas width="496px" height="272px" id="background"></canvas>
+        <canvas width="496px" height="272px" id="player"></canvas>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./assets/scripts/classes.js"></script>
+    <script src="./assets/scripts/script.js"></script>
+    
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        html {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid black;
+            width: 40px * 16; /* Taille réelle du canvas */
+            height: 40px * 9;
+            image-rendering: pixelated; /* Permet d'avoir une image pixelisée */
+            /* Dimensionne le canvas à 800x800 pixels */
+            /* Vous pouvez ajuster cette taille selon vos besoins */
+            /* Cela double la taille des pixels */
+            /* 800 = 2 * 400 */
+            /* Si vous voulez un autre ratio, vous pouvez modifier ces valeurs */
+            /* Par exemple, pour tripler la taille des pixels, vous pouvez utiliser 1200x1200 */
+            /* 1200 = 3 * 400 */
+            /* Pour quadrupler la taille des pixels, vous pouvez utiliser 1600x1600, etc. */
+            width: 1280px;
+            height: 720px;
+      }
+    </style>
+</body>
+</html>
