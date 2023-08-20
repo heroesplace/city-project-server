@@ -74,8 +74,10 @@ class Player {
         this.socket = socket
         this.username = username
         this.sprite = new Sprite('./assets/sprite.png', this.players_grid)
-        this.speed = 1
         this.coords = { x: x, y: y }
+
+        this.speed = 1
+        this.step = 16 * this.speed
     }
 
     display() {
@@ -84,43 +86,28 @@ class Player {
         }
     }
 
-    move(side) {
-        const width = 32;
-        const height = 32;
-
-        let step = 16 * this.speed
+    setPosition(x ,y) {
+        const width = 32
+        const height = 32
 
         this.sprite.clear(this.coords.x, this.coords.y, width, height)
 
-        switch (side) {
-            case "left": // Touche de gauche
-                console.log("Message 'Gauche' envoyé au serveur NodeJS")
+        let sprite_value = null
 
-                this.coords.x = this.coords.x - step
-
-                this.sprite.draw(0, height * 2, width, height, this.coords.x, this.coords.y, width, height)
-                break;
-            case "top": // Touche du haut
-                console.log("Message 'Haut' envoyé au serveur NodeJS")
-
-                this.coords.y = this.coords.y - step
-
-                this.sprite.draw(0, 0, width, height, this.coords.x, this.coords.y, width, height)
-                break;
-            case "right": // Touche de droite
-                console.log("Message 'Droite' envoyé au serveur NodeJS")
-
-                this.coords.x = this.coords.x + step
-                this.sprite.draw(0, height * 3, width, height, this.coords.x, this.coords.y, width, height)
-                break;
-            case "bottom": // Touche du bas
-                console.log("Message 'Bas' envoyé au serveur NodeJS")
-
-                this.coords.y = this.coords.y + step
-
-                this.sprite.draw(0, height, width, height, this.coords.x, this.coords.y, width, height)
-                break;
+        if (x > this.coords.x) { // Right
+            sprite_value = height * 3
+        } else if (x < this.coords.x) { // Left
+            sprite_value = height * 2
+        } else if (y > this.coords.y) { // Bottom
+            sprite_value = height
+        } else if (y < this.coords.y) { // Top
+            sprite_value = 0
         }
+
+        this.coords.x = x
+        this.coords.y = y
+
+        this.sprite.draw(0, sprite_value, width, height, this.coords.x, this.coords.y, width, height)
 
         console.log(this.coords.x, this.coords.y)
     }

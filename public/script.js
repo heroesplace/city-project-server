@@ -28,19 +28,30 @@ $(function() {
         }
     })
 
-    socket.on("message", (data) => {
-        if (data.username != username) {
-            players_list[data.username].move(data.move)
-        }
+    socket.on("set_player_position", (data) => {
+        players_list[data.username].setPosition(data.coords.x, data.coords.y)
     })
 
     document.addEventListener("keydown", function(event) {
-        if (event.keyCode == 37) side = "left"
-        if (event.keyCode == 38) side = "top"
-        if (event.keyCode == 39) side = "right"
-        if (event.keyCode == 40) side = "bottom"
+        let direction = null
 
-        socket.emit('message', { "username": username, "move": side })
-        players_list[username].move(side)
+        switch (event.code) {
+            case "ArrowLeft": // Touche de gauche
+                direction = "left"
+                break;
+            case "ArrowUp": // Touche du haut
+                direction = "top"
+                break;
+            case "ArrowRight": // Touche de droite
+                direction = "right"
+                break;
+            case "ArrowDown": // Touche du bas
+                direction = "bottom"
+                break;
+        }
+
+        if (direction != null) {
+            socket.emit('ask_player_move', { "username": username, "direction": direction })
+        }
     })
 })
