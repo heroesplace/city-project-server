@@ -1,9 +1,18 @@
-const net = require('net')
+const http = require('http');
 const express = require('express');
-var path = require('path');
+const { Server } = require('socket.io');
+const path = require('path')
+
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",  // Autorise toutes les origines
+    methods: ["GET", "POST"]
+  }
+})
+
+const port = 3000
 
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -11,37 +20,40 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 })
 
-io.on('connection', (socket) => {// connexion web - node 
-    const client = new net.Socket(); // connexion node - rust
+let database_connected_players = [
+    {
+        "username": "soleo",
+        "coords": {
+            "x": 208, 
+            "y": 112
+        }
+    },
+    {
+        "username": "aniwen",
+        "coords": {
+            "x": 176, 
+            "y": 112
+        }
+    }
+]
 
-    console.log('Nouvelle connexion');
+io.on('connection', (socket) => {
+  console.log('Nouvelle connexion Socket.IO établie.');
 
-    client.connect(8080, '127.0.0.1', () => {
-        console.log('Connecté au serveur Rust');
-
-        // Écouter l'événement "message"
-        socket.on('message', (data) => {
-            console.log(`Message reçu : ${data}`);
-            client.write('{"type": "type1", "content" : "' + data.move +'"}');
-
-            // Émettre un événement "message" à tous les clients connectés
-            // io.emit('message', data);
-        });
-    });
+  // Événement de réception de messages
+  socket.on('message', (data) => {
+    console.log(data)
     
-    client.on('data', (data) => {
-        console.log('Message reçu du serveur : ' + data);
-    });
-    
-    client.on('close', () => {
-        console.log('Connexion fermée');
-    });
-    
-    client.on('error', (error) => {
-        console.error('Erreur: ' + error.message);
-    });    
-});
+    io.emit("message", data)
+  })
 
-http.listen(3000, () => {
-  console.log('Serveur en écoute sur le port 3000');
-});
+  socket.on('log_as', (username) => {
+    console.log(username + ' vient de se connected.')
+
+    io.emit('players_list', database_connected_players)
+  })
+})
+
+server.listen(port, () => {
+  console.log(`Serveur Socket.IO en écoute sur le port ${port}`);
+})
