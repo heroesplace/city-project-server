@@ -1,4 +1,3 @@
-
 $(function() {
     // Execution start
     let players_list = {}
@@ -22,13 +21,14 @@ $(function() {
         for (const element of data) {
             console.log(element)
 
-            players_list[element.username] = new Player(players_grid, socket, element.username, element.coords.x, element.coords.y)
+            players_list[element.username] = new Player(socket, element.username, element.coords.x, element.coords.y)
         
-            players_list[element.username].display()
+            players_grid.addSprite(players_list[element.username])
         }
     })
 
     socket.on("set_player_position", (data) => {
+        console.log(data)
         players_list[data.username].setPosition(data.coords.x, data.coords.y)
     })
 

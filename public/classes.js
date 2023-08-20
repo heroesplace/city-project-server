@@ -13,6 +13,10 @@ class Grid {
     update(execute) {
         execute(this.context)
     }
+
+    addSprite(sprite) {
+        sprite.setGrid(this)
+    }
 }
 
 class MapGrid {
@@ -32,9 +36,9 @@ class MapGrid {
     }
 
     drawGrid() {
-        var that = this
+        let that = this
 
-        var img = new Image()
+        let img = new Image()
             img.src = this.image_path
 
         img.onload = function() {
@@ -50,10 +54,39 @@ class MapGrid {
     }
 }
 
+class Hitbox {
+    constructor(x, y, width, height) {
+        this.coords = { x: x, y: y }
+        this.width = width
+        this.height = height
+    }
+
+    isColliding(hitbox) {
+        return this.coords.x < hitbox.coords.x + hitbox.width &&
+            this.coords.x + this.width > hitbox.coords.x &&
+            this.coords.y < hitbox.coords.y + hitbox.height &&
+            this.height + this.coords.y > hitbox.coords.y;
+    }
+
+    setPosition(x, y) {
+        this.coords.x = x
+        this.coords.y = y
+    }
+
+    setSize(width, height) {
+        this.width = width
+        this.height = height
+    }
+}
+
 class Sprite {
     constructor(image_path, grid) {
         this.image = new Image()
         this.image.src = image_path
+        this.grid = grid
+    }
+
+    setGrid(grid) {
         this.grid = grid
     }
 
@@ -68,21 +101,23 @@ class Sprite {
     }
 }
 
-class Player {
-    constructor(players_grid, socket, username, x, y) {
-        this.players_grid = players_grid
+class Player extends Sprite {
+    constructor(socket, username, x, y) {
+        super('./assets/sprite.png')
+
         this.socket = socket
         this.username = username
-        this.sprite = new Sprite('./assets/sprite.png', this.players_grid)
         this.coords = { x: x, y: y }
 
         this.speed = 1
         this.step = 16 * this.speed
+
+        this.display()
     }
 
     display() {
-        this.sprite.image.onload = () => {
-            this.sprite.draw(0, 0, 32, 32, this.coords.x, this.coords.y, 32, 32)
+        this.image.onload = () => {
+            this.draw(0, 0, 32, 32, this.coords.x, this.coords.y, 32, 32)
         }
     }
 
@@ -90,7 +125,7 @@ class Player {
         const width = 32
         const height = 32
 
-        this.sprite.clear(this.coords.x, this.coords.y, width, height)
+        this.clear(this.coords.x, this.coords.y, width, height)
 
         let sprite_value = null
 
@@ -107,7 +142,7 @@ class Player {
         this.coords.x = x
         this.coords.y = y
 
-        this.sprite.draw(0, sprite_value, width, height, this.coords.x, this.coords.y, width, height)
+        this.draw(0, sprite_value, width, height, this.coords.x, this.coords.y, width, height)
 
         console.log(this.coords.x, this.coords.y)
     }
