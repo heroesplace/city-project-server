@@ -103,7 +103,7 @@ class Sprite {
 
 class Player extends Sprite {
     constructor(socket, username, x, y) {
-        super('./assets/sprite.png')
+        super('/game/assets/sprite.png')
 
         this.socket = socket
         this.username = username

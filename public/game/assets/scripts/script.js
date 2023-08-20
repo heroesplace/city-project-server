@@ -5,12 +5,23 @@ $(function() {
     const socket = io()
     // const socket = io.connect("http://libertyr0ad.fr:3005")
     
-    let username = prompt("Quel est votre pseudo ?")
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
 
-    socket.emit("log_as", username)
+    console.log("log_as", getCookie("jwt_token"))
+    socket.emit("log_as", getCookie("jwt_token"))
+
+    socket.on("disconnect", () => {
+        console.log("Disconnected from server.")
+
+        window.location.href = "/"
+    })
 
     // Graphics
-    const background_grid = new MapGrid($("canvas#background")[0], './assets/grass_32.png')
+    const background_grid = new MapGrid($("canvas#background")[0], '/game/assets/grass_32.png')
 
     let players_grid = new Grid($("canvas#player")[0])
         players_grid.update((context) => {})
@@ -51,7 +62,7 @@ $(function() {
         }
 
         if (direction != null) {
-            socket.emit('ask_player_move', { "username": username, "direction": direction })
+            socket.emit('ask_player_move', { "direction": direction })
         }
     })
 })

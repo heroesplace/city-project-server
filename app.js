@@ -24,5 +24,5 @@ require('./backend/socket').handle(server)
 
 // Lancement du serveur web
 server.listen(PORT, () => {
-    console.log(`Serveur en écoute sur le port ${PORT}`);
+    console.log(`[http] Serveur en écoute sur le port ${PORT}`);
 })

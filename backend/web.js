@@ -1,3 +1,4 @@
+
 const path = require('path')
 const express = require('express')
 const jwt = require('jsonwebtoken')
@@ -5,7 +6,6 @@ const jwt = require('jsonwebtoken')
 const auth = require('./auth')
 
 exports.expose = (app) => {
-
     app.use('/game/assets', express.static(path.join(__dirname, '../public/game/assets')))
 
     app.use(express.urlencoded({
@@ -14,7 +14,7 @@ exports.expose = (app) => {
 
     // Home
     app.get('/', (req, res) => {
-        res.sendFile(__dirname, '..', 'public', 'index.html')
+        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
     })
 
     // Login
@@ -24,10 +24,13 @@ exports.expose = (app) => {
 
     // Route pour la création d'un token JWT après authentification
     app.post('/login', (req, res) => {
-        const { username, password } = req.body;
+        const { username, password } = req.body
     
         // Vérification des informations d'identification (exemple basique)
-        if (username === 'user' && password === 'password') {
+
+        auth.login(username, password).then(() => {
+            console.log("[auth] Identifiants valides")
+
             const token = jwt.sign({ username }, auth.SECRET_KEY)
             
             res.cookie('jwt_token', token, {
@@ -36,9 +39,11 @@ exports.expose = (app) => {
             })
             
             res.status(200).send({ token: token })
-        } else {
+        }).catch(() => {
+            console.log("[auth] Identifiants invalides")
+
             res.status(401).json({ message: 'Identifiants invalides' })
-        }
+        })
     })
 
     // Game
