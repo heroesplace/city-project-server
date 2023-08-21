@@ -1,17 +1,10 @@
 $(function() {
     // Execution start
-    let players_list = {}
-
     const socket = io()
-    // const socket = io.connect("http://libertyr0ad.fr:3005")
-    
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    const username = parseJwt(getCookie("jwt_token"))["username"]
 
-    console.log("log_as", getCookie("jwt_token"))
+    let entities_list = {}
+
     socket.emit("log_as", getCookie("jwt_token"))
 
     socket.on("disconnect", () => {
@@ -20,27 +13,37 @@ $(function() {
         window.location.href = "/"
     })
 
-    // Graphics
+    // Textures
+    const textures = {
+        "sprite": new Texture("/game/assets/sprite.png")
+    }
+
+    // Grids
     const background_grid = new MapGrid($("canvas#background")[0], '/game/assets/grass_32.png')
+    const entities_grid = new Grid(document.querySelectorAll("canvas#entities").item(0))
+    const player_grid = new Grid(document.querySelectorAll("canvas#player").item(0))
 
-    let players_grid = new Grid($("canvas#player")[0])
-        players_grid.update((context) => {})
+    // Sprites
+    let player_sprite = new Player(socket, textures["sprite"], player_grid)
 
-    socket.on("players_list", (data) => {
-        players_list = {}
+    socket.on("tickrate", (data) => {
+        for (const element of Object.values(entities_list)) {
+            element.clear()
+        }
+
+        entities_list = {}
 
         for (const element of data) {
-            console.log(element)
-
-            players_list[element.username] = new Player(socket, element.username, element.coords.x, element.coords.y)
+            if (element.username == username) {
+                player_sprite.setPosition(element.coords.x, element.coords.y, element.coords.direction)
+            } else {
+                entities_list[element.username] = new Player(socket, textures["sprite"], entities_grid)
         
-            players_grid.addSprite(players_list[element.username])
+                entities_list[element.username].setUsername(element.username)
+                entities_list[element.username].setPosition(element.coords.x, element.coords.y, element.coords.direction)
+                entities_list[element.username].display()
+            }
         }
-    })
-
-    socket.on("set_player_position", (data) => {
-        console.log(data)
-        players_list[data.username].setPosition(data.coords.x, data.coords.y)
     })
 
     document.addEventListener("keydown", function(event) {
@@ -61,6 +64,7 @@ $(function() {
                 break;
         }
 
+        // iterate over entities_list
         if (direction != null) {
             socket.emit('ask_player_move', { "direction": direction })
         }

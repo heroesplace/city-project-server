@@ -6,7 +6,8 @@ exports.models = {
         password: String,
         coords: {
             x: Number,
-            y: Number
+            y: Number,
+            direction: String
         }
 	})
 }

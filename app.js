@@ -20,7 +20,12 @@ require('./backend/web').expose(app)
 require('./backend/database').connect('mongodb://localhost:27017/city-project')
 
 // Gestion des sockets
-require('./backend/socket').handle(server)
+const socket = require('./backend/socket')
+const heartbeat = require('./backend/heartbeat')
+
+socket.handle(server)
+
+heartbeat.start(socket.io)
 
 // Lancement du serveur web
 server.listen(PORT, () => {

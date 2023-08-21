@@ -2,6 +2,8 @@ const mongodb = require('./database')
 const auth = require('./auth')
 const { Server } = require('socket.io')
 
+const logic = require('./logic')
+
 const Player = mongodb.models.Player
 
 exports.io = null
@@ -35,24 +37,18 @@ exports.handle = (server) => {
         // Événement de réception de messages
         socket.on('ask_player_move', (data) => {
             console.log(username + ' a demandé à bouger.')
-            Player.findOne({ username: username }).then((player) => {
-                switch (data.direction) {
-                    case "left": // Touche de gauche
-                        player.coords.x -= 32
-                        break;
-                    case "top": // Touche du haut
-                        player.coords.y -= 32
-                        break;
-                    case "right": // Touche de droite
-                        player.coords.x += 32
-                        break;
-                    case "bottom": // Touche du bas
-                        player.coords.y += 32
-                        break;
-                }
 
-                Player.updateOne({ username: username }, { coords: { x: player.coords.x, y: player.coords.y } }).finally(() => {
-                    this.io.emit("set_player_position", player)
+            Player.findOne({ username: username }).then((player) => {
+                logic.movePlayer(player, data.direction).then((result) => {
+                    if (result == null) {
+                        return
+                    }
+
+                    Player.updateOne({ username: username }, { coords: { x: player.coords.x, y: player.coords.y, direction: player.coords.direction } }).finally(() => {
+                        socket.emit("set_player_position", { username: username, coords: player.coords, direction: player.coords.direction })
+                        // this.io.emit except the current socket
+                        socket.broadcast.emit("update_entitie_position", { username: username, coords: player.coords, direction: player.coords.direction })
+                    })
                 })
             })
         })
@@ -69,9 +65,19 @@ exports.handle = (server) => {
                 }
 
                 Player.find({ connected: true }).then((players) => {
-                    this.io.emit('players_list', players)
+                    // player
+                    socket.emit('set_player_position', { username: username, coords: player.coords, direction: player.coords.direction })
+
+                    // other entities
+                    socket.emit('set_entities_position', players.filter((p) => p.username !== username))
                 })
             })
         })
+
+        setInterval(() => {
+            Player.find({ connected: true }).then((players) => {
+                socket.emit('set_entities_position', players.filter((p) => p.username !== username))
+            })
+        }, 1000)
     })
 }

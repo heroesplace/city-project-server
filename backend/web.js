@@ -27,11 +27,10 @@ exports.expose = (app) => {
         const { username, password } = req.body
     
         // Vérification des informations d'identification (exemple basique)
-
         auth.login(username, password).then(() => {
             console.log("[auth] Identifiants valides")
 
-            const token = jwt.sign({ username }, auth.SECRET_KEY)
+            const token = auth.generateToken({ username })
             
             res.cookie('jwt_token', token, {
                 expires  : new Date(Date.now() + 9999999),

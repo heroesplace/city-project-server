@@ -2,17 +2,23 @@ const mongodb = require('./database')
 const jwt = require('jsonwebtoken')
 const jwt_decode = require('jwt-decode')
 const bcrypt = require('bcrypt')
+const fs = require('fs')
 
 const Player = mongodb.models.Player
 
-exports.SECRET_KEY = 'votre_clé_secrète'
+exports.SECRET_KEY = fs.readFileSync('./private_key.pem', 'utf8')
+
+exports.generateToken = (payload) => {
+    return jwt.sign(payload, this.SECRET_KEY, {
+        algorithm: 'RS256', // Algorithme de signature
+        expiresIn: '1h'     // Durée de validité du JWT
+    })
+}
 
 exports.verifyToken = (req, res, next) => {
     if (!req.headers.cookie) {
         return res.redirect('/login')
     }
-
-    console.log(req.headers.cookie)
 
     const token = req.headers.cookie.split('=')[1]
 
@@ -22,7 +28,7 @@ exports.verifyToken = (req, res, next) => {
 
     jwt.verify(token, this.SECRET_KEY, (err, decoded) => {
         if (err) {
-            return res.status(403).json({ message: 'Token invalide' })
+            return res.redirect('/login')
         }
     
         req.user = decoded
@@ -36,16 +42,14 @@ exports.decodeToken = (token) => {
 }
 
 async function hashPassword(password) {
-    const saltRounds = 10; // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return hashedPassword;
+    const saltRounds = 10 // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
+    return await bcrypt.hash(password, saltRounds)
 }
 
 module.exports.hashPassword = hashPassword
 
 async function comparePasswords(password, hashedPassword) {
-    const passwordMatches = await bcrypt.compare(password, hashedPassword);
-    return passwordMatches;
+    return await bcrypt.compare(password, hashedPassword)
 }
   
 module.exports.comparePasswords = comparePasswords
@@ -56,7 +60,6 @@ async function login(username, password) {
             if (player === null) {
                 reject()
             } else {
-                console.log(password, player.password)
                 comparePasswords(password, player.password).then((passwordMatches) => {
                     if (passwordMatches) {
                         resolve()
