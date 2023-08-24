@@ -1,75 +1,73 @@
-const mongodb = require('./database')
 const jwt = require('jsonwebtoken')
 const jwt_decode = require('jwt-decode')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
 
-const Player = mongodb.models.Player
+const SECRET_KEY = fs.readFileSync('./private_key.pem', 'utf8')
 
-exports.SECRET_KEY = fs.readFileSync('./private_key.pem', 'utf8')
-
-exports.generateToken = (payload) => {
-    return jwt.sign(payload, this.SECRET_KEY, {
+// Fonction pour générer un token JWT
+function generateToken(payload) {
+    return jwt.sign(payload, SECRET_KEY, {
         algorithm: 'RS256', // Algorithme de signature
         expiresIn: '1h'     // Durée de validité du JWT
     })
 }
 
-exports.verifyToken = (req, res, next) => {
-    if (!req.headers.cookie) {
-        return res.redirect('/login')
-    }
-
-    const token = req.headers.cookie.split('=')[1]
-
-    if (!token) {
-        return res.redirect('/login')
-    }
-
-    jwt.verify(token, this.SECRET_KEY, (err, decoded) => {
-        if (err) {
-            return res.redirect('/login')
-        }
-    
-        req.user = decoded
-
-        if (next !== undefined) next()
-    })
-}
-
-exports.decodeToken = (token) => {
-    return jwt_decode(token)
-}
-
-async function hashPassword(password) {
-    const saltRounds = 10 // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
-    return await bcrypt.hash(password, saltRounds)
-}
-
-module.exports.hashPassword = hashPassword
-
-async function comparePasswords(password, hashedPassword) {
-    return await bcrypt.compare(password, hashedPassword)
-}
-  
-module.exports.comparePasswords = comparePasswords
-
-async function login(username, password) {
+// Fonction pour vérifier l'authenticité d'un token JWT
+async function verifyTokenAuthenticity(token) {
     return new Promise((resolve, reject) => {
-        Player.findOne({ username: username }).then((player) => {
-            if (player === null) {
+        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+            if (err) {
                 reject()
             } else {
-                comparePasswords(password, player.password).then((passwordMatches) => {
-                    if (passwordMatches) {
-                        resolve()
-                    } else {
-                        reject()
-                    }
-                })
+                resolve(decoded)
             }
         })
     })
 }
 
-module.exports.login = login
+// Middleware pour vérifier le token JWT
+// Verifie que le token est bien présent
+// ET que le token est valide
+async function verifyToken(req, res, next) {
+    if (!req.headers.cookie) {
+        return res.redirect('/login');
+    }
+
+    const token = req.headers.cookie.split('=')[1];
+
+    if (!token) {
+        return res.redirect('/login');
+    }
+
+    await verifyTokenAuthenticity(token).then(() => {
+        if (next !== undefined) return next()
+    }).catch(() => {
+        return res.redirect('/login')
+    })
+}
+
+// Fonction pour décoder un token JWT
+function decodeToken(token) {
+    return jwt_decode(token);
+}
+
+// Fonction pour hacher un mot de passe
+async function hashPassword(password) {
+    const saltRounds = 10; // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
+    return await bcrypt.hash(password, saltRounds);
+}
+
+// Fonction pour comparer les mots de passe
+async function comparePasswords(password, hashedPassword) {
+    return await bcrypt.compare(password, hashedPassword);
+}
+
+module.exports = {
+    generateToken,
+    verifyToken,
+    verifyTokenAuthenticity,
+    decodeToken,
+    hashPassword,
+    comparePasswords
+};

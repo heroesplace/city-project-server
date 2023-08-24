@@ -4,36 +4,61 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 
 const auth = require('./auth')
+const account = require('./account')
 
 exports.expose = (app) => {
-    app.use('/game/assets', express.static(path.join(__dirname, '../public/game/assets')))
-
+    // Middlewares
     app.use(express.urlencoded({
         extended: true
     }))
+
+    // Static files
+    app.use('/game/assets', express.static(path.join(__dirname, '../public/game/assets')))
 
     // Home
     app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
     })
 
-    // Login
-    app.get('/login', (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'public', 'login', 'index.html'))
+    // Game
+    app.get('/game', auth.verifyToken, (req, res) => {
+        res.sendFile(path.join(__dirname, '..', 'public', 'game', 'index.html'))
     })
 
-    // Route pour la création d'un token JWT après authentification
+    app.get('/register', (req, res) => {
+        res.sendFile(path.join(__dirname, '..', 'public', 'account', 'register', 'index.html'))
+    })
+
+    app.post('/register', (req, res) => {
+        const { account_name, character_name, email_address, password } = req.body
+
+        account.register(account_name, character_name, email_address, password).then(() => {
+            console.log("[auth] Compte créé")
+
+            res.status(200).json({ message: 'Compte créé' })
+        }).catch(() => {
+            console.log("[auth] Compte déjà existant")
+
+            res.status(401).json({ message: 'Compte déjà existant' })
+        })
+    })
+
+    // Login page
+    app.get('/login', (req, res) => {
+        res.sendFile(path.join(__dirname, '..', 'public', 'account', 'login', 'index.html'))
+    })
+
+    // Login
     app.post('/login', (req, res) => {
         const { username, password } = req.body
     
         // Vérification des informations d'identification (exemple basique)
-        auth.login(username, password).then(() => {
+        account.login(username, password).then((token) => {
             console.log("[auth] Identifiants valides")
 
-            const token = auth.generateToken({ username })
-            
             res.cookie('jwt_token', token, {
                 expires  : new Date(Date.now() + 9999999),
+                SameSite: 'Strict',
                 httpOnly : false
             })
             
@@ -45,8 +70,4 @@ exports.expose = (app) => {
         })
     })
 
-    // Game
-    app.get('/game', auth.verifyToken, (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'public', 'game', 'index.html'))
-    })
 }

@@ -1,17 +1,20 @@
 $(function() {
     // Execution start
     const socket = io()
-    const username = parseJwt(getCookie("jwt_token"))["username"]
 
-    let entities_list = {}
-
-    socket.emit("log_as", getCookie("jwt_token"))
+    socket.emit("token_authentification", getCookie("jwt_token"))
 
     socket.on("disconnect", () => {
         console.log("Disconnected from server.")
 
+        deleteCookie("jwt_token")
+
         window.location.href = "/"
     })
+
+    const currentCharacter = parseJwt(getCookie("jwt_token"))["currentCharacter"]
+
+    let entities_list = {}
 
     // Textures
     const textures = {
@@ -34,14 +37,14 @@ $(function() {
         entities_list = {}
 
         for (const element of data) {
-            if (element.username == username) {
+            if (element._id == currentCharacter) {
                 player_sprite.setPosition(element.coords.x, element.coords.y, element.coords.direction)
             } else {
-                entities_list[element.username] = new Player(socket, textures["sprite"], entities_grid)
+                entities_list[element.character_name] = new Player(socket, textures["sprite"], entities_grid)
         
-                entities_list[element.username].setUsername(element.username)
-                entities_list[element.username].setPosition(element.coords.x, element.coords.y, element.coords.direction)
-                entities_list[element.username].display()
+                entities_list[element.character_name].setUsername(element.character_name)
+                entities_list[element.character_name].setPosition(element.coords.x, element.coords.y, element.coords.direction)
+                entities_list[element.character_name].display()
             }
         }
     })
@@ -68,5 +71,19 @@ $(function() {
         if (direction != null) {
             socket.emit('ask_player_move', { "direction": direction })
         }
+    })
+
+    document.querySelectorAll("div.user-interface div.chat form.input").item(0).addEventListener("submit", function(e) {
+        send_message(e, socket)
+    })
+
+    socket.on("receive_message", (data) => {
+        receive_message(data)
+    })
+
+    
+    document.querySelectorAll("button#disconnect").item(0).addEventListener("click", function() {
+        socket.disconnect()
+
     })
 })

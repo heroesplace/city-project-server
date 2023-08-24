@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <title>City Project - Se connecter</title>
+    <title>City Project - Créer un compte</title>
 </head>
 <body>
-    <form method="post" action="/login" enctype="application/x-www-form-urlencoded">
-        <input type="text" name="username" id="username" value="user" placeholder="Username" />
-
+    <form>
+        <input type="text" name="account_name" id="account_name" value="" placeholder="Nom du compte" />
+        <input type="text" name="character_name" id="character_name" value="" placeholder="Nom en jeu" />
+        
+        <input type="email" name="email_address" id="email_address" value="test@mail.com" placeholder="Adresse e-mail" />
         <input type="text" name="password" id="password" value="password" placeholder="Password" />
 
         <input type="submit" value="Se connecter" />
@@ -29,10 +31,12 @@
                 e.preventDefault()
 
                 $.ajax({
-                    url: '/login',
+                    url: '/register',
                     method: 'POST',
                     data: {
-                        username: $('#username').val(),
+                        account_name: $('#account_name').val(),
+                        character_name: $('#character_name').val(),
+                        email_address: $('#email_address').val(),
                         password: $('#password').val()
                     },
                     success: function(data) {
