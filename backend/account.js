@@ -34,10 +34,14 @@ async function login(account_name, password) {
             } else {
                 auth.comparePasswords(password, account.password).then((passwordMatches) => {
                     if (passwordMatches) {
-                        resolve(auth.generateToken({ 
-                            account_name: account.account_name,
-                            currentCharacter: account.currentCharacter 
-                        }))
+
+                        mongodb.models.Account.updateOne({ _id: account._id }, { lastConnection: Date.now() }).then(() => {
+                            resolve(auth.generateToken({ 
+                                account_name: account.account_name,
+                                currentCharacter: account.currentCharacter 
+                            }))
+                        })
+
                     } else {
                         reject()
                     }

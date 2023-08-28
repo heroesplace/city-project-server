@@ -42,7 +42,9 @@ exports.handle = (server) => {
                 if (decoded) {
                     payload = decoded
 
-                    mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: true })
+                    mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: true }).then(() => {
+                        console.log(payload["currentCharacter"] + ' vient de se connecter.')
+                    })
                 } else {
                     socket.disconnect()
                 }
@@ -90,15 +92,18 @@ exports.handle = (server) => {
             })
         })
 
+        /*
         // Chat events
         socket.on("send_message", (data) => {
             this.io.emit("receive_message", { username: username, message: data.message })
-        })
+        })*/
 
         socket.on("disconnect", () => {
             console.log(payload["account_name"] + ' vient de se déconnecter.')
 
-            mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: false })
+            mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: false }).then(() => {
+                console.log(payload["currentCharacter"] + ' vient de se déconnecter.')
+            })
         })
     })
 

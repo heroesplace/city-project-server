@@ -37,6 +37,7 @@ $(function() {
         entities_list = {}
 
         for (const element of data) {
+
             if (element._id == currentCharacter) {
                 player_sprite.setPosition(element.coords.x, element.coords.y, element.coords.direction)
             } else {

@@ -57,6 +57,22 @@ exports.models = {
             progress: Number
         }]
 	}),
+    DiscordUser: mongoose.model('DiscordUser', {
+        auth_token: String,
+        snowflake: String,
+        username: String,
+        discriminator: String,
+        global_name: String,
+        avatar: String,
+        bot: Boolean,
+        mfa_enabled: Boolean,
+        banner: String,
+        accent_color: Number,
+        locale: String,
+        verified: Boolean,
+        email: String,
+        flags: Number
+    }),
     Character: mongoose.model('Character', {
         character_name: String,
         owner: "ObjectId",
