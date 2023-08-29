@@ -29,21 +29,19 @@ async function verifyTokenAuthenticity(token) {
 // Middleware pour vérifier le token JWT
 // Verifie que le token est bien présent
 // ET que le token est valide
-async function verifyToken(req, res, next) {
-    if (!req.headers.cookie) {
-        return res.redirect('/login');
-    }
+async function verifyToken(req, res) {
+    return new Promise((resolve, reject) => {
+        if (!req.headers.cookie) reject()
+    
+        const token = req.headers.cookie.split('=')[1];
+    
+        if (!token) reject()
 
-    const token = req.headers.cookie.split('=')[1];
-
-    if (!token) {
-        return res.redirect('/login');
-    }
-
-    await verifyTokenAuthenticity(token).then(() => {
-        if (next !== undefined) return next()
-    }).catch(() => {
-        return res.redirect('/login')
+        verifyTokenAuthenticity(token).then(() => {
+            resolve(decodeToken(token))
+        }).catch(() => {
+            reject()
+        })
     })
 }
 

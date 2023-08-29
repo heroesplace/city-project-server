@@ -38,7 +38,8 @@ async function login(account_name, password) {
                         mongodb.models.Account.updateOne({ _id: account._id }, { lastConnection: Date.now() }).then(() => {
                             resolve(auth.generateToken({ 
                                 account_name: account.account_name,
-                                currentCharacter: account.currentCharacter 
+                                account_id: account._id,
+                                currentCharacter: account.currentCharacter
                             }))
                         })
 

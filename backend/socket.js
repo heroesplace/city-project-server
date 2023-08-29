@@ -4,9 +4,13 @@ const { Server } = require('socket.io')
 
 const logic = require('./logic')
 
-const Player = mongodb.models.Player
+exports.sockets = new Map() 
 
 exports.io = null
+
+exports.getUserSocket = (userId) => {
+    return this.io.sockets.sockets.get(this.sockets.get(userId));
+}
 
 exports.handle = (server) => {
     let options = {
@@ -45,6 +49,8 @@ exports.handle = (server) => {
                     mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: true }).then(() => {
                         console.log(payload["currentCharacter"] + ' vient de se connecter.')
                     })
+
+                    this.sockets.set(payload["currentCharacter"], socket)
                 } else {
                     socket.disconnect()
                 }
@@ -99,12 +105,11 @@ exports.handle = (server) => {
         })*/
 
         socket.on("disconnect", () => {
-            console.log(payload["account_name"] + ' vient de se déconnecter.')
+            console.log(payload)
 
             mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: false }).then(() => {
                 console.log(payload["currentCharacter"] + ' vient de se déconnecter.')
             })
         })
     })
-
 }

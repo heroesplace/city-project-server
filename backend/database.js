@@ -19,7 +19,7 @@ exports.models = {
             default: 0
         }, // 0 = non vérifié, 1 = vérifié, 2 = banni
         ipAddresses: [String],
-        discordId: String,
+        discordId: "ObjectId",
         preferences: {
             language: String,
             theme: String
@@ -58,21 +58,22 @@ exports.models = {
         }]
 	}),
     DiscordUser: mongoose.model('DiscordUser', {
-        auth_token: String,
+        token: {
+            auth: String,
+            refresh: String,
+            expires_in: Number
+        },
         snowflake: String,
         username: String,
         discriminator: String,
         global_name: String,
         avatar: String,
-        bot: Boolean,
         mfa_enabled: Boolean,
         banner: String,
         accent_color: Number,
         locale: String,
-        verified: Boolean,
-        email: String,
-        flags: Number
-    }),
+        premium_type: Number
+    }, "discord_users"),
     Character: mongoose.model('Character', {
         character_name: String,
         owner: "ObjectId",

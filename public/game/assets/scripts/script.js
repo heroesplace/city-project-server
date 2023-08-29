@@ -4,14 +4,6 @@ $(function() {
 
     socket.emit("token_authentification", getCookie("jwt_token"))
 
-    socket.on("disconnect", () => {
-        console.log("Disconnected from server.")
-
-        deleteCookie("jwt_token")
-
-        window.location.href = "/"
-    })
-
     const currentCharacter = parseJwt(getCookie("jwt_token"))["currentCharacter"]
 
     let entities_list = {}
@@ -84,7 +76,13 @@ $(function() {
 
     
     document.querySelectorAll("button#disconnect").item(0).addEventListener("click", function() {
+        console.log("Disconnected from server.")
+
+        deleteCookie("jwt_token")
+        
         socket.disconnect()
+        
+        window.location.href = "/"
 
     })
 })
