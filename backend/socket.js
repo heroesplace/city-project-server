@@ -110,6 +110,8 @@ exports.handle = (server) => {
             mongodb.models.Character.updateOne({ _id: payload["currentCharacter"] }, { connected: false }).then(() => {
                 console.log(payload["currentCharacter"] + ' vient de se déconnecter.')
             })
+
+            socket.disconnect()
         })
     })
 }

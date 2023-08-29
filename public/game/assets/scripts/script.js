@@ -4,6 +4,14 @@ $(function() {
 
     socket.emit("token_authentification", getCookie("jwt_token"))
 
+    socket.on("disconnect", () => {
+        console.log("Disconnected from server.")
+
+        deleteCookie("jwt_token")
+
+        window.location.href = "/"
+    })
+
     const currentCharacter = parseJwt(getCookie("jwt_token"))["currentCharacter"]
 
     let entities_list = {}
@@ -75,14 +83,54 @@ $(function() {
     })
 
     
-    document.querySelectorAll("button#disconnect").item(0).addEventListener("click", function() {
-        console.log("Disconnected from server.")
-
-        deleteCookie("jwt_token")
-        
+    document.querySelectorAll("div.user-interface div.toolbox div.tool_button#disconnect").item(0).addEventListener("click", function() {
         socket.disconnect()
-        
-        window.location.href = "/"
-
     })
+
+    
+    // Liste des couleurs pour chaque channel
+    const channelColors = {
+        "[Monde]": "lime",
+        "[Village]": "orange",
+        "[District]": "lightblue",
+        "[Royaume]": "yellow",
+        "[Empire]": "red",
+        "[DM]": "lightpink"
+    };
+
+    // Colorisation des éléments "channel", "content", et "colon"
+    const messages = document.querySelectorAll('.message');
+    messages.forEach(message => {
+        const channel = message.querySelector('.channel');
+        const user = message.querySelector('.user');
+        const content = message.querySelector('.content');
+        const colon = message.querySelector('.colon');
+
+        // Si le channel n'est pas présent, on ne fait rien
+        if (!channel) return;
+
+        const channelText = channel.textContent;
+        const channelColor = channelColors[channelText] || "white";
+
+        // Appliquer la couleur au channel
+        channel.style.color = channelColor;
+
+        // Si content existe, appliquer la couleur
+        if (content) {
+            content.style.color = channelColor;
+        }
+
+        // Si colon existe, appliquer la couleur
+        if (colon) {
+            colon.style.color = channelColor;
+        }
+
+        // Colorisation des crochets de "user" si user existe
+        if (user) {
+            const userText = user.textContent;
+            const coloredText = userText.replace('[', `<span style="color:${channelColor}">[</span>`)
+                                        .replace(']', `<span style="color:${channelColor}">]</span>`);
+            user.innerHTML = coloredText;
+        }
+    });
 })

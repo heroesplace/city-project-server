@@ -28,10 +28,7 @@ exports.expose = (app) => {
         auth.verifyToken(req, res).then((decoded) => {
             const code = req.query.code
             
-            if (code) {
-                console.log(decoded)
-                discord.link(code, decoded["account_id"])
-            }
+            if (code) discord.link(code, decoded["account_id"])
             
             res.sendFile(path.join(__dirname, '..', 'public', 'game', 'index.html'))
         }).catch(() => {

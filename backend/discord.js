@@ -23,7 +23,7 @@ async function link(code, account) {
 
         const oauthData = await tokenResponseData.body.json();
         
-        console.log(oauthData);
+        // console.log(oauthData);
 
         const userResult = await request('https://discord.com/api/users/@me', {
             headers: {

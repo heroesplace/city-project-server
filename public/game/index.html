@@ -1,157 +1,305 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Police de notre choix -->
+    <link href="https://fonts.cdnfonts.com/css/avenir" rel="stylesheet" />
+    <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet" />
+    <link href="https://fonts.cdnfonts.com/css/proxima-nova-condensed" rel="stylesheet" />
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/game/assets/styles/gui.css" />
+    <link rel="stylesheet" type="text/css" href="/game/assets/styles/chat.css" />
+    <link rel="stylesheet" type="text/css" href="/game/assets/styles/toolbox.css" />
+    <link rel="stylesheet" type="text/css" href="/game/assets/styles/minimap.css" />
+    <link rel="stylesheet" type="text/css" href="/game/assets/styles/player_infos.css" />
+
+    <title>CityProject</title>
 </head>
+
 <body>
-    <div class="container">
-        <canvas width="496px" height="272px" id="background"></canvas>
-        <canvas width="496px" height="272px" id="entities"></canvas>
-        <canvas width="496px" height="272px" id="player"></canvas>
-
-        <div class="user-interface">
-            <div class="chat">
-                <div class="messages">
-                    <div class="message">
-                        <span class="author">[Admin]</span>
-                        <span class="content">Bienvenue sur le chat !</span>
-                    </div>
-                </div>
-                <form class="input">
-                    <input type="text" placeholder="Envoyer un message..." />
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="info">Hoi!</div>
     <a href="https://discord.com/api/oauth2/authorize?client_id=1144418040251961367&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgame&response_type=code&scope=identify">CLIQUE SUR MOI - DISCORD</a>
-    
-    <button id="disconnect">X</button>
-
-    <script src="/socket.io/socket.io.js"></script>
+	
+	<script src="/socket.io/socket.io.js"></script>
 
     <script src="/game/assets/scripts/utils.js"></script>
     <script src="/game/assets/scripts/classes.js"></script>
     <script src="/game/assets/scripts/chat.js"></script>
 
     <script src="/game/assets/scripts/script.js"></script>
-    <script src="/game/assets/scripts/discord.js"></script>
     
-    <style>
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
+    <div class="container">
+        <canvas width="496px" height="272px" id="background"></canvas>
+        <canvas width="496px" height="272px" id="entities"></canvas>
+        <canvas width="496px" height="272px" id="player"></canvas>
 
-        html {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
+        <div class="user-interface">
+            <!-- Chat box -->
+            <div class="chat">
+                <div class="inner">
+                    <div class="messages">
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user admin">[Soleo]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut tout le monde, comment ça va ?</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Village]</span>
+                            <span class="user">[Dams]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut Soleo ! Ça va bien, merci. J'ai passé la journée à
+                                explorer la forêt.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[District]</span>
+                            <span class="user">[Taz]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salutations ! Cela semble être une belle façon de passer la
+                                journée. J'ai travaillé sur mon projet d'art.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Royaume]</span>
+                            <span class="user">[Gnapii]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut tout le monde ! Dams, ton aventure sonne géniale. Taz,
+                                j'adorerais voir ton projet d'art !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Empire]</span>
+                            <span class="user">[Leariel]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Hey là-bas ! Gnapii, je suis sûr que le projet de Taz sera
+                                incroyable. De mon côté, j'ai lu un nouveau livre
+                                fantastique.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[DM]</span>
+                            <span class="user">[Aniwen]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut tout le monde ! Leariel, ton livre m'intrigue. Je
+                                planifie une nouvelle campagne de jeu de rôle. Besoin d'idées
+                                !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Zgurt]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut les amis ! Aniwen, une campagne de jeu de rôle ? J'ai
+                                quelques idées épiques à partager.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Hovantide]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salutations à tous ! Zgurt, j'ai adoré tes idées la dernière
+                                fois. Au fait, avez-vous entendu parler des étranges
+                                événements dans la vallée ?</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Malacraer]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut Hovantide, oui, j'ai entendu parler de ces événements.
+                                J'étais là-bas quand tout a commencé. C'est vraiment
+                                mystérieux.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Duens]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bonjour tout le monde ! Malacraer, raconte-nous tout en
+                                détail. Ça pourrait être une aventure passionnante à explorer
+                                ensemble.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Trezary]</span>
+                            <span class="colon">:</span>>
+                            <span class="content">Salutations, chers amis ! J'adore l'idée de découvrir ce
+                                mystère. Duens, tu es toujours prêt pour l'aventure !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Xythiom]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut à tous ! Je me joins à l'aventure aussi. Tenez-moi au
+                                courant des détails.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Dryak]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bonjour les amis ! Xythiom, tu ne seras pas déçu. Nos
+                                aventures sont toujours passionnantes. J'ai apporté des
+                                provisions pour le voyage !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Eldrey]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut tout le monde ! Dryak, tu as pensé à tout comme
+                                toujours. J'ai hâte de commencer cette quête.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Charlou]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Hey les amis ! Eldrey, prépare-toi à être émerveillé. J'ai
+                                entendu dire que ces événements sont liés à une ancienne
+                                prophétie.</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Shaynn]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salut tout le monde ! Charlou, une prophétie ? Cela devient
+                                encore plus excitant. Prêts à écrire l'histoire !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Skayles]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Salutations, compagnons ! Shaynn, j'ai mon carnet prêt pour
+                                prendre des notes. Préparons-nous à l'aventure de notre vie
+                                !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Socrate]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                Eligendi hic sit quidem veniam repellendus, voluptate
+                                perferendis, voluptatem tenetur suscipit porro exercitationem
+                                neque sint magnam ipsam assumenda error facere illum
+                                dolores?</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                        <div class="message">
+                            <span class="channel">[Monde]</span>
+                            <span class="user">[Player]</span>
+                            <span class="colon">:</span>
+                            <span class="content">Bienvenue sur le chat !</span>
+                        </div>
+                    </div>
+                    <form class="input">
+                        <input type="text" placeholder="Envoyer un message..." />
+                    </form>
+                </div>
+            </div>
 
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+            <!-- Toolbox -->
+            <div class="toolbox">
+                <div class="inner">
+                    <div class="tool_button" id="1">1</div>
+                    <div class="tool_button" id="2">2</div>
+                    <div class="tool_button" id="3">3</div>
+                    <div class="tool_button" id="4">4</div>
+                    <div class="tool_button" id="5">5</div>
+                    <div class="tool_button" id="6">6</div>
+                    <div class="tool_button" id="7">7</div>
+                    <div class="tool_button" id="8">8</div>
+                    <div class="tool_button" id="disconnect"><img src="/game/assets/svg/disconnect.svg"></div>
+                </div>
+            </div>
+            
+            <!-- Minimap -->
+            <div class="minimap">
+                <div class="inner">
+                    <div class="map"></div>
+                    <div class="bottom">
+                        <div class="coords">X : 69 Y : 666</span></div>
+                        <div class="city_players">Village : 42 connectés</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Player info -->
 
-        div.user-interface {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        div.user-interface div.chat {
-            position: absolute;
-            bottom: 18px;
-            left: 18px;
-            background-color: rgba(0, 0, 0, 0.5);
-            height: 40%;
-            width: 25%;
-        }
-
-        div.user-interface div.chat {
-            display: flex;
-            flex-direction: column;
-        }
-
-        div.user-interface div.chat div.messages {
-            flex: 1;
-            overflow-y: scroll;
-            padding: 8px;
-        }
-
-        div.user-interface div.chat div.messages div.message {
-            margin-bottom: 8px;
-        }
-
-        div.user-interface div.chat div.messages div.message span.author {
-            color: #00ff00;
-        }
-
-        div.user-interface div.chat div.messages div.message span.content {
-            color: white;
-        }
-
-        div.user-interface div.chat form.input {
-            border-top: 1px solid white;
-            width: 100%;
-            height: 10%;
-        }
-
-        div.user-interface div.chat form.input input {
-            color: white;
-            width: calc(100% - 24px);
-            height: calc(100% - 24px) ;
-            padding: 12px;
-            margin: 0;
-            outline: none;
-            border: none;
-            background-color: rgba(0, 0, 0, 0);
-        }
-
-        button#disconnect {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 32px;
-            height: 32px;
-            background-color: red;
-            color: white;
-            border: none;
-            outline: none;
-            cursor: pointer;
-        }
-        
-        canvas {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid black;
-            image-rendering: pixelated; /* Permet d'avoir une image pixelisée */
-            /* Dimensionne le canvas à 800x800 pixels */
-            /* Vous pouvez ajuster cette taille selon vos besoins */
-            /* Cela double la taille des pixels */
-            /* 800 = 2 * 400 */
-            /* Si vous voulez un autre ratio, vous pouvez modifier ces valeurs */
-            /* Par exemple, pour tripler la taille des pixels, vous pouvez utiliser 1200x1200 */
-            /* 1200 = 3 * 400 */
-            /* Pour quadrupler la taille des pixels, vous pouvez utiliser 1600x1600, etc. */
-            width: 1280px;
-            height: 720px;
-      }
-    </style>
+            <div class="player_info">
+                <div class="inner">
+                    <div class="top">
+                        <div class="left">
+                            <div class="avatar"><img src="/game/assets/svg/avatar.svg"></div>
+                        </div>
+                        <div class="right">
+                            <div class="name">Soleo</div>
+                            <div class="job_box">
+                                <div class="job">Forgeron</div>
+                                <div class="level">Niveau 42</div>
+                            </div>
+                            <div class="realm">Montpellier</div>
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <div class="hp">HP : 59 / 666</div>
+                        <div class="energy">MP : 34 / 69</div>
+                    </div>
+                </div>
+        </div>
+    </div>
 </body>
 </html>
+

@@ -1,0 +1,74 @@
+div.user-interface div.chat {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 40%;
+    width: 22.5%;
+    padding: 3px;
+}
+
+div.user-interface div.chat div.inner {
+    border: 1px solid white;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 5px 0 0;
+}
+
+div.user-interface div.chat div.inner div.messages {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 0 8px;
+}
+
+div.user-interface div.chat div.inner div.messages::-webkit-scrollbar {
+    width: 12px;
+}
+
+div.user-interface div.chat div.inner div.messages::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+div.user-interface div.chat div.inner div.messages::-moz-scrollbar {
+    width: 12px;
+}
+
+div.user-interface div.chat div.inner div.messages::-moz-scrollbar-track {
+    border-radius: 10px;
+}
+
+div.user-interface div.chat div.inner div.messages::-webkit-scrollbar-thumb,
+div.user-interface div.chat div.inner div.messages::-moz-scrollbar-thumb {
+    background-color: #ffffff30;
+    border: 1px solid white;
+    border-radius: 0;
+}
+
+div.user-interface div.chat div.inner div.messages div.message {
+    color: white;
+}
+
+div.user-interface div.chat div.inner div.messages div.message span.user.admin {
+    color: red;
+}
+
+div.user-interface div.chat div.inner form.input {
+    display: flex;
+    border-top: 1px solid white;
+    width: calc(100% + 5px);
+    height: 10%;
+    margin-top: 8px;
+}
+
+div.user-interface div.chat div.inner form.input input[type=text] {
+    color: white;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    padding: 12px;
+    margin: 0;
+    outline: none;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}

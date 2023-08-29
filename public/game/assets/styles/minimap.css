@@ -1,0 +1,33 @@
+div.user-interface div.minimap {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 23%;
+    width: 18.5%;
+    padding: 3px;
+}
+
+div.user-interface div.minimap div.inner {
+    border: 1px solid white;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+div.user-interface div.minimap div.inner div.map {
+    height: 90%;
+    color:white;
+}
+
+div.user-interface div.minimap div.inner div.bottom {
+    display: flex;
+    color:white;
+    text-align: center;
+}
+
+div.user-interface div.minimap div.inner div.bottom div {
+    width: 50%;
+    border-top: 1px solid white;
+}
