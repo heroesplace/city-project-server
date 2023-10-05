@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const jwt = require("jsonwebtoken");
 const account = require("../../account")
+const auth = require("../../auth")
 
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
@@ -31,7 +32,7 @@ router.post("/account/login", (req, res) => {
     const { account_name, password } = req.body
 
     account.login(account_name, password).then((e) => {
-        const token = jwt.sign(account_name, "e")
+        const token = auth.generateToken(account_name)
     
         res.cookie('token', token, {httpOnly: true})
 

@@ -3,13 +3,12 @@ const jwt_decode = require('jwt-decode')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
 
-const SECRET_KEY = fs.readFileSync('./private_key.pem', 'utf8')
+const SECRET_KEY = fs.readFileSync('./private.key', 'utf8')
 
 // Fonction pour générer un token JWT
 function generateToken(payload) {
     return jwt.sign(payload, SECRET_KEY, {
-        algorithm: 'RS256', // Algorithme de signature
-        expiresIn: '1h'     // Durée de validité du JWT
+        algorithm: 'RS256' // Algorithme de signature
     })
 }
 
