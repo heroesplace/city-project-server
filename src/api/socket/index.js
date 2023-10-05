@@ -7,10 +7,16 @@ let options = {
     }
 }
 
-exports.handle = (server) => {
-    this.io = new Server(server, options)
+exports.listen = (port, callback) => {
+    this.io = new Server(port, options)
+
+    callback()
 
     this.io.on('connection', (socket) => {
         console.log('[socket] Nouvelle connexion établie.')
+
+        socket.on("ping", (callback) => {
+            callback();
+        });
     })
 }

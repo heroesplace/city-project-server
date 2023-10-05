@@ -4,8 +4,6 @@ const bodyParser = require('body-parser')
 const socket = require('./src/api/socket')
 const cors = require('cors')
 
-const config = require('./config')
-
 const app = express()
 const server = http.createServer(app)
 
@@ -20,11 +18,13 @@ app.use(bodyParser.json())
 app.use("/api", require('./src/api/web/index'))
 
 // Connexion à la base de données
-require('./src/database').connect(`mongodb://${config.DATABASE_ADDRESS}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5`)
+require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5`)
 
-socket.handle(server)
+socket.listen(3001, () => {
+    console.log(`[socket] Serveur en écoute | http://localhost:3001`)
+})
 
 // Lancement du serveur web
-server.listen(config.PORT, () => {
-    console.log(`[http] Serveur en écoute | http://localhost:${config.PORT}`)
+server.listen(3000, () => {
+    console.log(`[http] Serveur en écoute | http://localhost:3000`)
 })
