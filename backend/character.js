@@ -1,10 +1,9 @@
-const mongodb = require('./database')
+const mongodb = require('./database/')
 const mongoose = require('mongoose')
 
 async function createCharacter(name, owner) {
     const session = await mongoose.startSession();
     session.startTransaction();
-
 
     try {
         const character = await mongodb.models.Character.collection.insertOne({ character_name: name, owner: owner }, { session: session });

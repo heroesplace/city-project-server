@@ -15,11 +15,11 @@ async function register(account_name, character_name, email_address, password) {
                     }).then((e) => {
                         character.createCharacter(character_name, e.insertedId)
 
-                        resolve()
+                        resolve("Account created !")
                     });
                 });
             } else {
-                reject()
+                reject(new Error("Account already exists !"))
             }
         });
     });
@@ -30,26 +30,20 @@ async function login(account_name, password) {
     return new Promise((resolve, reject) => {
         mongodb.models.Account.findOne({ account_name: account_name }).then((account) => {
             if (account === null) {
-                reject()
+                reject(new Error("Account not found !"))
             } else {
                 auth.comparePasswords(password, account.password).then((passwordMatches) => {
                     if (passwordMatches) {
-
                         mongodb.models.Account.updateOne({ _id: account._id }, { lastConnection: Date.now() }).then(() => {
-                            resolve(auth.generateToken({ 
-                                account_name: account.account_name,
-                                account_id: account._id,
-                                currentCharacter: account.currentCharacter
-                            }))
+                            resolve("Logged in !")
                         })
-
                     } else {
-                        reject()
+                        reject(new Error("Wrong password !"))
                     }
-                });
+                })
             }
-        });
-    });
+        })
+    })
 }
 
 module.exports = {
