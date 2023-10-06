@@ -34,7 +34,10 @@ router.post("/account/login", (req, res) => {
     account.login(account_name, password).then((e) => {
         const token = auth.generateToken(account_name)
     
-        res.cookie('token', token, {httpOnly: true})
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'strict'
+        })
 
         res.status(200)
 
