@@ -7,11 +7,16 @@ const cors = require('cors')
 const app = express()
 const server = http.createServer(app)
 
+require("dotenv").config()
+
 // Remove for production
 app.use(cors({ 
-    origin: process.env.CLIENT_DOMAIN_NAME || "*",
+    origin: process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 }))
+
+console.log("origin: " + process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT)
 
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())
@@ -19,13 +24,13 @@ app.use(bodyParser.json())
 app.use("/api", require('./src/api/web/index'))
 
 // Connexion à la base de données
-require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS || "192.168.1.90"}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5`)
+require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS || "localhost"}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5`)
 
-socket.listen(3001, () => {
-    console.log(`[socket] Serveur en écoute | http://${process.env.CLIENT_DOMAIN_NAME || "localhost"}:3001`)
+socket.listen(process.env.SOCKET_PORT, () => {
+    console.log(`[ws] Serveur socket en écoute | ws://${process.env.SERVER_ADDRESS + ":" + process.env.SOCKET_PORT}`)
 })
 
 // Lancement du serveur web
-server.listen(3000, () => {
-    console.log(`[http] Serveur en écoute | http://${process.env.CLIENT_DOMAIN_NAME || "localhost"}:3000`)
+server.listen(process.env.WEB_PORT, () => {
+    console.log(`[http] Serveur web en écoute | http://${process.env.SERVER_ADDRESS + ":" + process.env.WEB_PORT}`)
 })
