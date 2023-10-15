@@ -11,12 +11,12 @@ require("dotenv").config()
 
 // Remove for production
 app.use(cors({ 
-    origin: process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT,
+    origin: "http://" + process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 }))
 
-console.log("origin: " + process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT)
+console.log("http://" + process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT)
 
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())

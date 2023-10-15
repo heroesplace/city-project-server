@@ -2,6 +2,7 @@ const router = require('express').Router()
 const jwt = require("jsonwebtoken");
 const account = require("../../account")
 const auth = require("../../auth")
+const cookies = require("../../cookies")
 
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
@@ -10,20 +11,22 @@ router.post("/account/register", (req, res) => {
         account.register(account_name, character_name, email_address, password).then((e) => {
             res.status(200)
 
-            console.log(e)
             res.json({
-                message: e
+                message: e,
+                status: 200
             })
         }).catch((e) => {
             res.status(403)
             res.json({
-                message: e.message
+                message: e.message,
+                status: 403
             })
         })
     } else {
         res.status(403)
         res.json({
-            message: "Missing fields !"
+            message: "Missing fields !",
+            status: 403
         })
     }
 })
@@ -31,39 +34,34 @@ router.post("/account/register", (req, res) => {
 router.post("/account/login", (req, res) => {
     const { account_name, password } = req.body
 
-    account.login(account_name, password).then((e) => {
-        const token = auth.generateToken(account_name)
-    
+    account.login(account_name, password).then((token) => {
         res.cookie('token', token, {
-            httpOnly: true,
+            httpOnly: false,
             sameSite: 'strict'
         })
 
         res.status(200)
 
         res.json({
-            message: e
+            message: "Successfully logged in !",
+            status: 200
         })
     }).catch((e) => {
         res.status(403)
         res.json({
-            message: e.message
+            message: e.message,
+            status: 403
         })
     })
 })
 
 router.get("/account/profile", (req, res) => {
     if (req.headers.cookie) {
-        // FIX LATER
-        const cookies = req.headers.cookie.split(";").reduce((acc, cookie) => {
-            const [key, value] = cookie.split('=');
-            acc[key.trim()] = value.trim();
-            return acc;
-        }, {});
+        const token = cookies.getCookie(req, "token")
 
-        if (cookies["token"]) {
+        if (token) {
             res.json({
-                "username": jwt.decode(cookies["token"])
+                "username": jwt.decode(token)
             })
         }
     } else {
@@ -73,5 +71,38 @@ router.get("/account/profile", (req, res) => {
         })
     }
 })
+
+router.get("/account/verify-token", (req, res) => {
+    const token = cookies.getCookie(req, "token")
+
+    if (token) {
+        auth.verifyTokenAuthenticity(token).then(() => {
+            res.status(200)
+    
+            res.json({
+                message: "Token is valid !",
+                status: 200
+            })
+        }).catch((err) => {
+            res.status(403)
+
+            res.clearCookie('token', {
+                httpOnly: false,
+                sameSite: 'strict'
+            })
+
+            res.json({
+                message: err.message,
+                status: 403
+            })
+        })
+    } else {
+        res.status(403)
+        res.json({
+            message: "Not logged in !",
+        })
+    }
+})
+
 
 module.exports = router

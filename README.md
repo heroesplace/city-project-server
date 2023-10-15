@@ -33,7 +33,5 @@ services:
     environment:
       SERVER_ADDRESS={ IP/DOMAIN }
       WEB_PORT=3000
-
-      CLIENT_ADDRESS={ IP/DOMAIN }
-      CLIENT_PORT=3002
+      SOCKET_PORT=3001
 ```

@@ -35,7 +35,7 @@ async function login(account_name, password) {
                 auth.comparePasswords(password, account.password).then((passwordMatches) => {
                     if (passwordMatches) {
                         mongodb.models.Account.updateOne({ _id: account._id }, { lastConnection: Date.now() }).then(() => {
-                            resolve("Logged in !")
+                            resolve(auth.generateToken({ account_id: account._id }))
                         })
                     } else {
                         reject(new Error("Wrong password !"))

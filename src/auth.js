@@ -17,29 +17,10 @@ async function verifyTokenAuthenticity(token) {
     return new Promise((resolve, reject) => {
         jwt.verify(token, SECRET_KEY, (err, decoded) => {
             if (err) {
-                reject()
+                reject(new Error("Invalid token"))
             } else {
                 resolve(decoded)
             }
-        })
-    })
-}
-
-// Middleware pour vérifier le token JWT
-// Verifie que le token est bien présent
-// ET que le token est valide
-async function verifyToken(req, res) {
-    return new Promise((resolve, reject) => {
-        if (!req.headers.cookie) reject()
-    
-        const token = req.headers.cookie.split('=')[1];
-    
-        if (!token) reject()
-
-        verifyTokenAuthenticity(token).then(() => {
-            resolve(decodeToken(token))
-        }).catch(() => {
-            reject()
         })
     })
 }
@@ -62,7 +43,6 @@ async function comparePasswords(password, hashedPassword) {
 
 module.exports = {
     generateToken,
-    verifyToken,
     verifyTokenAuthenticity,
     decodeToken,
     hashPassword,
