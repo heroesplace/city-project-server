@@ -35,3 +35,16 @@ services:
       WEB_PORT=3000
       SOCKET_PORT=3001
 ```
+
+Ajouter un fichier `.env` avec les valeurs suivantes :
+
+```
+DATABASE_ADDRESS=
+
+SERVER_ADDRESS=
+SOCKET_PORT=3001
+WEB_PORT=3000
+
+CLIENT_ADDRESS=
+CLIENT_PORT=3002
+```

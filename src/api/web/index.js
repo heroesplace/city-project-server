@@ -55,6 +55,20 @@ router.post("/account/login", (req, res) => {
     })
 })
 
+router.get("/account/logout", (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: false,
+        sameSite: 'strict'
+    })
+
+    res.status(200)
+
+    res.json({
+        message: "Successfully logged out !",
+        status: 200
+    })
+})
+
 router.get("/account/profile", (req, res) => {
     if (req.headers.cookie) {
         const token = cookies.getCookie(req, "token")
