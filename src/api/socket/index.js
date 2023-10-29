@@ -1,8 +1,11 @@
 const { Server } = require('socket.io')
-const auth = require('../../auth')
-const mongodb = require('../../database')
+const mongoose = require('mongoose')
 
-const map = require('../../game/map')
+const auth = require('../../auth')
+
+const { onMessage } = require('./features/chat')
+const { onLoadMap } = require('./features/map')
+const { onSendInvitation } = require('./features/invitations')
 
 let options = {
     cors: {
@@ -16,46 +19,37 @@ const authSocketMiddleware = (socket, next) => {
     const token = socket.handshake.auth.token
 
     auth.verifyTokenAuthenticity(token).then((decoded) => {
-        socket.account_id = decoded.account_id
+        socket.account_id = new mongoose.Types.ObjectId(decoded.account_id)
+        socket.account_name = decoded.account_name
+        socket.character_name = decoded.character_name
+        socket.character_id = new mongoose.Types.ObjectId(decoded.character_id)
+
+        socket.join(decoded.character_id)
 
         next()
     }).catch(err => {
-        return next(err);
+        return next(err)
     })
 }
 
 exports.listen = (port, callback) => {
-    this.io = new Server(port, options)
+    const io = new Server(port, options)
 
     callback()
 
-    this.io.use((socket, next) => {
+    io.use((socket, next) => {
         authSocketMiddleware(socket, next)
     })
 
-    this.io.on('connection', (socket) => {
+    io.on('connection', (socket) => {
         console.log('[socket] Nouvelle connexion établie.')
 
         socket.on('ping', () => {
             socket.emit('pong')
         })
 
-        socket.on('ask_map_part', (data) => {
-            console.log(data)
-            mongodb.models.Account.findOne({ _id: socket.account_id }).then((account) => {
-                mongodb.models.Character.findOne({ owner: account._id }).then((character) => {
-
-                    const newCoords = map.moveCamera(character, data.direction)
-
-                    mongodb.models.Character.updateOne({ _id: character }, { coords: newCoords }).then(() => {
-                        let newPart = map.calcNewPart(newCoords.x, newCoords.y, map.world_map)
-
-                        // console.log(newPart)
-
-                        socket.emit('map_part', { map_part: newPart })
-                    })
-                })
-            })
-        })
+        socket.on('chat_message', (content) => onMessage(io, socket, content))
+        socket.on('ask_map_part', (coords) => onLoadMap(socket, coords.direction))
+        socket.on('send_invitation', (invitation) => onSendInvitation(socket, invitation.receiver))
     })
 }

@@ -6,8 +6,8 @@ async function createCharacter(name, owner) {
     session.startTransaction();
 
     try {
-        const character = await mongodb.models.Character.collection.insertOne({ character_name: name, owner: owner }, { session: session });
-        await mongodb.models.Account.updateOne({ _id: owner }, { currentCharacter: character.insertedId  }, { session: session });
+        const character = await mongodb.models.Characters.collection.insertOne({ character_name: name, owner: owner }, { session: session });
+        await mongodb.models.Accounts.updateOne({ _id: owner }, { currentCharacter: character.insertedId  }, { session: session });
 
         await session.commitTransaction();
         session.endSession();

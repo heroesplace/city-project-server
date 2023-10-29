@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 exports.models = {
-	Account: mongoose.model('Account', {
+	Accounts: mongoose.model('Accounts', {
         account_name: {
             type: String,
             required: true
@@ -57,7 +57,7 @@ exports.models = {
             progress: Number
         }]
 	}),
-    DiscordUser: mongoose.model('DiscordUser', {
+    DiscordUsers: mongoose.model('DiscordUsers', {
         token: {
             auth: String,
             refresh: String,
@@ -74,7 +74,7 @@ exports.models = {
         locale: String,
         premium_type: Number
     }, "discord_users"),
-    Character: mongoose.model('Character', {
+    Characters: mongoose.model('Characters', {
         character_name: String,
         owner: "ObjectId",
         creationDate: Date,
@@ -116,5 +116,47 @@ exports.models = {
             id: "ObjectId",
             duration: Number // par exemple, en secondes
         }]
+    }),
+    Messages: mongoose.model('Messages', {
+        content: String,
+        author: {
+            type: "ObjectId",
+            required: true
+        }, // Character Object Id
+        date: Date,
+        channel: String
+    }),
+    Villages: mongoose.model('Villages', {
+        name: String,
+        owner: "ObjectId",
+        creationDate: Date,
+        coords: {
+            x: Number,
+            y: Number
+        },
+        expands: [
+            {
+                x: Number,
+                y: Number
+            }
+        ],
+        members: ["ObjectId"], // Character Object Id
+        buildings: [{
+            id: Number,
+            type: String,
+            level: Number,
+            coords: {
+                x: Number,
+                y: Number
+            },
+        }]
+    }),
+    Invitations: mongoose.model('Invitations', {
+        sender: "ObjectId",
+        receiver: [{
+            character: "ObjectId",
+            status: Number, // 0 = en attente, 1 = acceptée, 2 = refusée
+            date: Date
+        }],
     })
 }

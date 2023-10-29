@@ -55,6 +55,41 @@ router.post("/account/login", (req, res) => {
     })
 })
 
+
+router.post("/character/create_village", (req, res) => {
+    /*const { village_name, members_list } = req.body
+
+    if (req.headers.cookie) {
+        const token = cookies.getCookie(req, "token")
+
+        if (token) {
+            const username = jwt.decode(token) // HERE
+
+            console.log(username)
+            village.createVillage(username, village_name, members_list).then(() => {
+                res.status(200)
+
+                res.json({
+                    message: "Successfully created village !",
+                    status: 200
+                })
+            }).catch((e) => {
+                res.status(403)
+                res.json({
+                    message: e.message,
+                    status: 403
+                })
+            })
+        }
+    } else {
+        res.status(403)
+        res.json({
+            message: "Not logged in !",
+        })
+    }*/
+})
+
+// GET
 router.get("/account/logout", (req, res) => {
     res.clearCookie('token', {
         httpOnly: false,

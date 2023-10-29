@@ -1,0 +1,19 @@
+const mongodb = require('../../../database')
+
+const onMessage = (io, socket, content) => {
+    if (content == '') return
+    if (content.length > 500) return
+
+    io.emit('chat_message', { content: content, author: socket.character_name })
+
+    mongodb.models.Messages.collection.insertOne({
+        content: content,
+        author: socket.character_id,
+        date: Date.now(),
+        channel: 'global'
+    })
+}
+
+module.exports = {
+    onMessage
+}
