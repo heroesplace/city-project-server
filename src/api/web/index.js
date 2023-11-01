@@ -4,6 +4,11 @@ const account = require("../../account")
 const auth = require("../../auth")
 const cookies = require("../../cookies")
 
+const { onInviteCharacter } = require("./features/invitations")
+const { getCharacterId } = require("../../character")
+
+const { io } = require("../socket/index")
+
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
 
@@ -55,38 +60,24 @@ router.post("/account/login", (req, res) => {
     })
 })
 
+router.post("/invitations/invite_character", (req, res) => {
+    const { character_name } = req.body
+    const token = req.headers.authorization.split(' ')[1]
 
-router.post("/character/create_village", (req, res) => {
-    /*const { village_name, members_list } = req.body
-
-    if (req.headers.cookie) {
-        const token = cookies.getCookie(req, "token")
-
-        if (token) {
-            const username = jwt.decode(token) // HERE
-
-            console.log(username)
-            village.createVillage(username, village_name, members_list).then(() => {
-                res.status(200)
-
-                res.json({
-                    message: "Successfully created village !",
-                    status: 200
-                })
-            }).catch((e) => {
-                res.status(403)
-                res.json({
-                    message: e.message,
-                    status: 403
-                })
+    auth.verifyTokenAuthenticity(token).then((decoded) => {
+        getCharacterId(character_name).then((character_id) => {
+            onInviteCharacter(decoded.character_id, character_id).then((err) => {
+                // io.to(character_id).emit("server_alert", { message: "Vous avez reçu une invitation !" })
+                res.status(err.code).json({ code: err.message, message: err.clientMessage })
+            }).catch((err) => {
+                res.status(err.code).json({ code: err.message, message: err.clientMessage })
             })
-        }
-    } else {
-        res.status(403)
-        res.json({
-            message: "Not logged in !",
+        }).catch((err) => {
+            res.status(err.code).json({ code: err.message, message: err.clientMessage })
         })
-    }*/
+    }).catch((err) => {
+        res.status(err.code).json({ code: err.message, message: err.clientMessage })
+    })
 })
 
 // GET

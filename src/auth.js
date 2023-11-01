@@ -3,6 +3,8 @@ const jwt_decode = require('jwt-decode')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
 
+const { ErrorCode } = require('./api/web/features/errors')
+
 const SECRET_KEY = fs.readFileSync('./private.key', 'utf8')
 
 // Fonction pour générer un token JWT
@@ -17,7 +19,7 @@ async function verifyTokenAuthenticity(token) {
     return new Promise((resolve, reject) => {
         jwt.verify(token, SECRET_KEY, (err, decoded) => {
             if (err) {
-                reject(new Error("Invalid token"))
+                reject(new ErrorCode(403, "INVALID_TOKEN", "Invalid token."))
             } else {
                 resolve(decoded)
             }

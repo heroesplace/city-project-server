@@ -5,7 +5,8 @@ const auth = require('../../auth')
 
 const { onMessage } = require('./features/chat')
 const { onLoadMap } = require('./features/map')
-const { onSendInvitation } = require('./features/invitations')
+const { onReplyToInvitation } = require('../socket/features/invitations')
+const { onInviteCharacter } = require('../web/features/invitations')
 
 let options = {
     cors: {
@@ -13,6 +14,8 @@ let options = {
         methods: ["GET", "POST"]
     }
 }
+
+exports.io = null
 
 const authSocketMiddleware = (socket, next) => {
     // since you are sending the token with the query
@@ -35,6 +38,8 @@ const authSocketMiddleware = (socket, next) => {
 exports.listen = (port, callback) => {
     const io = new Server(port, options)
 
+    io.disconnectSockets()
+
     callback()
 
     io.use((socket, next) => {
@@ -50,6 +55,7 @@ exports.listen = (port, callback) => {
 
         socket.on('chat_message', (content) => onMessage(io, socket, content))
         socket.on('ask_map_part', (coords) => onLoadMap(socket, coords.direction))
-        socket.on('send_invitation', (invitation) => onSendInvitation(socket, invitation.receiver))
+        socket.on('invite_character', (character) => onInviteCharacter(io, socket, character))
+        socket.on('reply_to_invitation', (invitation) => onReplyToInvitation(io, socket, invitation.sender, invitation.answer))
     })
 }
