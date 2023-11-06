@@ -5,7 +5,7 @@ const auth = require('../../auth')
 
 const { onMessage } = require('./features/chat')
 const { onLoadMap } = require('./features/map')
-const { onReplyToInvitation } = require('../socket/features/invitations')
+const { onReplyToInvitation, updateInvitationList } = require('../socket/features/invitations')
 const { onInviteCharacter } = require('../web/features/invitations')
 
 let options = {
@@ -57,5 +57,6 @@ exports.listen = (port, callback) => {
         socket.on('ask_map_part', (coords) => onLoadMap(socket, coords.direction))
         socket.on('invite_character', (character) => onInviteCharacter(io, socket, character))
         socket.on('reply_to_invitation', (invitation) => onReplyToInvitation(io, socket, invitation.sender, invitation.answer))
+        socket.on("get_invitation_member_list", (sender) => updateInvitationList(io, socket.character_id))
     })
 }
