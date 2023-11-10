@@ -4,7 +4,7 @@ const onMessage = (io, socket, content) => {
     if (content == '') return
     if (content.length > 500) return
 
-    io.emit('chat_message', { content: content, author: socket.character_name })
+    io.emit('update_chat_message', { content: content, author: socket.character_name })
 
     mongodb.models.Messages.collection.insertOne({
         content: content,

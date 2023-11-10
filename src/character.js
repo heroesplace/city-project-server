@@ -4,8 +4,8 @@ const mongoose = require('mongoose')
 const { ErrorCode } = require('./api/web/features/errors')
 
 async function createCharacter(name, owner) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    const session = await mongoose.startSession()
+    session.startTransaction()
 
     try {
         const character = await mongodb.models.Characters.collection.insertOne({ character_name: name, owner: owner }, { session: session });

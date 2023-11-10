@@ -5,8 +5,9 @@ const auth = require('../../auth')
 
 const { onMessage } = require('./features/chat')
 const { onLoadMap } = require('./features/map')
-const { onReplyToInvitation, updateInvitationList } = require('../socket/features/invitations')
-const { onInviteCharacter } = require('../web/features/invitations')
+const { onReplyToInvite, updateInvitesList } = require('../socket/features/invites')
+const { onInviteCharacter } = require('../web/features/invites')
+const { onPullMailbox } = require('../socket/features/mailbox')
 
 let options = {
     cors: {
@@ -53,10 +54,14 @@ exports.listen = (port, callback) => {
             socket.emit('pong')
         })
 
-        socket.on('chat_message', (content) => onMessage(io, socket, content))
-        socket.on('ask_map_part', (coords) => onLoadMap(socket, coords.direction))
-        socket.on('invite_character', (character) => onInviteCharacter(io, socket, character))
-        socket.on('reply_to_invitation', (invitation) => onReplyToInvitation(io, socket, invitation.sender, invitation.answer))
-        socket.on("get_invitation_member_list", (sender) => updateInvitationList(io, socket.character_id))
+        // Client --> Push --> Server
+        socket.on('push_chat_message', (content) => onMessage(io, socket, content))
+        socket.on('push_invite_character', (character) => onInviteCharacter(io, socket, character))
+        socket.on('push_invite_reply', (invite) => onReplyToInvite(io, socket, invite.sender, socket.character_id, invite.answer))
+
+        // Client <-- Pull <-- Server
+        socket.on('pull_map_part', (coords) => onLoadMap(socket, coords.direction))
+        socket.on('pull_invite_members', (sender) => updateInvitesList(io, socket.character_id))
+        socket.on('pull_character_mailbox', () => onPullMailbox(socket, socket.character_id))
     })
 }

@@ -4,7 +4,7 @@ const account = require("../../account")
 const auth = require("../../auth")
 const cookies = require("../../cookies")
 
-const { onInviteCharacter } = require("./features/invitations")
+const { onInviteCharacter } = require("./features/invites")
 const { getCharacterId } = require("../../character")
 
 const { io } = require("../socket/index")

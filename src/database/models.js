@@ -115,7 +115,8 @@ exports.models = {
         statusEffects: [{
             id: "ObjectId",
             duration: Number // par exemple, en secondes
-        }]
+        }],
+        invites: ["ObjectId"]
     }),
     Messages: mongoose.model('Messages', {
         content: String,
@@ -151,12 +152,12 @@ exports.models = {
             },
         }]
     }),
-    Invitations: mongoose.model('Invitations', {
+    Invites: mongoose.model('Invites', {
         sender: "ObjectId",
         receiver: [{
             character_id: "ObjectId",
             status: Number, // 0 = en attente, 1 = acceptée, 2 = refusée
             date: Date
         }],
-    })
+    }, "invites")
 }
