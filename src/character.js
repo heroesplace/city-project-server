@@ -8,31 +8,44 @@ async function createCharacter(name, owner) {
     session.startTransaction()
 
     try {
-        const character = await mongodb.models.Characters.collection.insertOne({ character_name: name, owner: owner }, { session: session });
-        await mongodb.models.Accounts.updateOne({ _id: owner }, { currentCharacter: character.insertedId  }, { session: session });
+        const character = await new mongodb.models.Character({
+            character_name: name,
+            owner: owner
+        }, { session: session }).save()
 
-        await session.commitTransaction();
-        session.endSession();
+        await mongodb.models.Account.updateOne({ _id: owner }, { currentCharacter: character.insertedId  }, { session: session })
+
+        await session.commitTransaction()
+        session.endSession()
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
+        await session.abortTransaction()
+        session.endSession()
+        throw error
     }
 }
 
-function getCharacterId(character_name) {
-    return new Promise((resolve, reject) => {
-        mongodb.models.Characters.findOne({ character_name: character_name }).then((character) => {
-            if (!character) {
-                reject(new ErrorCode(404, "CHARACTER_NOT_FOUND", "Character not found"))
-            } else {
-                resolve(character._id)
-            }
-        })
-    })
+async function getCharacterIdFromName(character_name) {
+    const character = await mongodb.models.Character.findOne({ character_name: character_name })
+    
+    if (!character) {
+        throw new ErrorCode(404, "CHARACTER_NOT_FOUND", "Character not found")
+    } else {
+        return character._id
+    }
+}
+
+async function getCharacterNameFromId(character_id) {
+    const character = await mongodb.models.Character.findOne({ _id: character_id })
+    
+    if (!character) {
+        throw new ErrorCode(404, "CHARACTER_NOT_FOUND", "Character not found")
+    } else {
+        return character.character_name
+    }
 }
 
 module.exports = {
     createCharacter,
-    getCharacterId
+    getCharacterIdFromName,
+    getCharacterNameFromId
 }

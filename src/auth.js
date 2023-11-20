@@ -35,7 +35,9 @@ function decodeToken(token) {
 // Fonction pour hacher un mot de passe
 async function hashPassword(password) {
     const saltRounds = 10; // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
-    return await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password, saltRounds)
+
+    return hash.toString();
 }
 
 // Fonction pour comparer les mots de passe

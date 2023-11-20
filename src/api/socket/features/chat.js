@@ -6,7 +6,7 @@ const onMessage = (io, socket, content) => {
 
     io.emit('update_chat_message', { content: content, author: socket.character_name })
 
-    mongodb.models.Messages.collection.insertOne({
+    mongodb.models.Message.collection.insertOne({
         content: content,
         author: socket.character_id,
         date: Date.now(),
