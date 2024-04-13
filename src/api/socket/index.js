@@ -8,18 +8,16 @@ const { onLoadMap } = require('./features/map')
 const { inviteCharacter, replyToInvite, pullInviteMembers } = require('../socket/features/invites')
 const { pullMailBox } = require('../socket/features/mailbox')
 
-let options = {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-}
-
-let io = null
-
 const authSocketMiddleware = (socket, next) => {
-    // since you are sending the token with the query
-    const token = socket.handshake.auth.token
+    try {
+        if (!socket.handshake.auth.token && !socket.handshake.headers.cookie) {
+            throw new Error('No token provided')
+        }
+    } catch (err) {
+        return next(err)
+    }
+    
+    const token = socket.handshake.auth.token || socket.handshake.headers.cookie.split("=")[1].split(";")[0] || null
 
     auth.verifyTokenAuthenticity(token).then((decoded) => {
         socket.account_id = new mongoose.Types.ObjectId(decoded.account_id)
@@ -35,9 +33,7 @@ const authSocketMiddleware = (socket, next) => {
     })
 }
 
-const listen = (port, callback) => {
-    io = new Server(port, options)
-
+const listen = (io, callback) => {
     io.disconnectSockets()
 
     callback()
