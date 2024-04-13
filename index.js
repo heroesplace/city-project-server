@@ -11,6 +11,8 @@ const io = socketIO(server)
 
 require("dotenv").config()
 
+const PORT = 3000
+
 app.use((req, res, next) => {
   res.set({
     'Cross-Origin-Embedder-Policy': 'require-corp',
@@ -34,10 +36,10 @@ app.use("/api", require('./src/api/web/index'))
 require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS || "localhost"}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5&readPreference=secondary`)
 
 socket.listen(io, () => {
-    console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ":" + process.env.PORT}`)
+    console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ":" + PORT}`)
 })
 
 // Lancement du serveur web
-server.listen(process.env.PORT, () => {
-    console.log(`[http] Serveur web en écoute | http://${process.env.SERVER_ADDRESS + ":" + process.env.PORT}`)
+server.listen(PORT, () => {
+    console.log(`[http] Serveur web en écoute | http://${process.env.SERVER_ADDRESS + ":" + PORT}`)
 })

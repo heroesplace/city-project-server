@@ -1,0 +1,6 @@
+node_modules
+keys
+.github
+README.md
+docker-compose.yml
+.env

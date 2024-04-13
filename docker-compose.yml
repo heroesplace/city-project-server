@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  city-project-server:
+    image: 196534287b7d0
+    container_name: city-project-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_ADDRESS=192.168.1.39
+      - SERVER_ADDRESS=game.devsoleo.fr
+      - CLIENT_ADDRESS=devsoleo.fr

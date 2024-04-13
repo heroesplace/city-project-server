@@ -6,6 +6,6 @@ COPY . .
 
 RUN npm install --quiet --production
 
-EXPOSE 3000 3001
+EXPOSE 3000
 
 CMD [ "npm", "start" ]
