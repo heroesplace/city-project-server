@@ -3,13 +3,18 @@ const socketIO = require('socket.io')
 const express = require('express')
 const bodyParser = require('body-parser')
 const socket = require('./src/api/socket')
+require("dotenv").config()
 
 const app = express()
 const server = http.createServer(app)
 
-const io = socketIO(server)
-
-require("dotenv").config()
+const io = socketIO(server, {
+  cors: {
+    origin: 'https://' + process.env.CLIENT_ADDRESS,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+})
 
 const PORT = 3000
 
