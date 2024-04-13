@@ -3,14 +3,17 @@ const socketIO = require('socket.io')
 const express = require('express')
 const bodyParser = require('body-parser')
 const socket = require('./src/api/socket')
+
 require("dotenv").config()
 
 const app = express()
 const server = http.createServer(app)
 
+const allowedOrigin = (process.env.NODE_ENV === 'production' ? 'https' : 'http') + "://" + process.env.CLIENT_ADDRESS
+
 const io = socketIO(server, {
   cors: {
-    origin: 'https://' + process.env.CLIENT_ADDRESS,
+    origin: allowedOrigin,
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -22,7 +25,7 @@ app.use((req, res, next) => {
   res.set({
     'Cross-Origin-Embedder-Policy': 'require-corp',
     'Cross-Origin-Opener-Policy': 'same-origin',
-    'Access-Control-Allow-Origin': 'https://' + process.env.CLIENT_ADDRESS,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Credentials': true
   })
   
