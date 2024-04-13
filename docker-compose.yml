@@ -2,7 +2,7 @@ version: '3'
 
 services:
   city-project-server:
-    image: 196534287b7d0
+    image: ghcr.io/devsoleo/city-project-server:main
     container_name: city-project-server
     ports:
       - "3000:3000"
