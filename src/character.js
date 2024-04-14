@@ -8,12 +8,15 @@ async function createCharacter(name, owner) {
     session.startTransaction()
 
     try {
-        const character = await new mongodb.models.Character({
+        const id = new mongoose.Types.ObjectId()
+
+        new mongodb.models.Character({
+            _id: id,
             character_name: name,
             owner: owner
-        }, { session: session }).save()
+        }).save({ session: session })
 
-        await mongodb.models.Account.updateOne({ _id: owner }, { currentCharacter: character.insertedId  }, { session: session })
+        mongodb.models.Account.updateOne({ _id: owner }, { currentCharacter: id  }, { session: session })
 
         await session.commitTransaction()
         session.endSession()

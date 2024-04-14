@@ -5,10 +5,7 @@ const { models } = require('./models')
 function connect(uri) {
     console.log("[mongodb] Tentative de connexion à la base de données..")
 
-    mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).then(
+    mongoose.connect(uri).then(
         () => {
             console.log("[mongodb] Connexion à la base de données réussie !")
         },
