@@ -1,12 +1,5 @@
-const { Server } = require('socket.io')
-const mongoose = require('mongoose')
-
 const auth = require('../../auth')
-
-const { onMessage } = require('./features/chat')
-const { onLoadMap } = require('./features/map')
-const { inviteCharacter, replyToInvite, pullInviteMembers } = require('../socket/features/invites')
-const { pullMailBox } = require('../socket/features/mailbox')
+const events = require('./events').events
 
 const authSocketMiddleware = (socket, next) => {
     try {
@@ -45,25 +38,9 @@ const listen = (io, callback) => {
     io.on('connection', (socket) => {
         console.log('[socket] Nouvelle connexion établie.')
 
-        socket.on('ping', () => {
-            socket.emit('pong')
-        })  
-
-        // Client --> Push --> Server
-        socket.on('push_chat_message', (content) => onMessage(io, socket, content))
-
-        // Envoi d'invitations
-        socket.on('push_invite_character', (character) => inviteCharacter(io, socket, socket.character_id, character)) 
-    
-        // Réponse à une invitation
-        socket.on('push_invite_reply', (invite) => replyToInvite(io, socket, invite.sender, socket.character_id, invite.answer))
-
-        // Client <-- Pull <-- Server
-        socket.on('pull_map_part', (coords) => onLoadMap(socket, coords.direction))
-
-        // Récupération des membres d'une invitation
-        socket.on('pull_invite_characters', () => pullInviteMembers(io.to(socket.character_id.toString()), socket.character_id))
-        socket.on('pull_character_mailbox', () => pullMailBox(io.to(socket.character_id.toString()), socket.character_id))
+        for (const [event, handler] of Object.entries(events)) {
+            socket.on(event, (content) => handler({ io: io, socket: socket, content: content }))
+        }
     })
 }
 

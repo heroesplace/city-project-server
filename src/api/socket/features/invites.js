@@ -22,7 +22,15 @@ const isAlreadyInvited = (sender, receiver) => {
     })
 }
 
+const onInviteCharacter = (event) => {
+    const { io, socket, content } = event
+
+    inviteCharacter(io, socket, socket.character_id, content)
+}
+
 const inviteCharacter = async (io, socket, sender, receiver) => {
+    console.log(`[socket] Invitation de ${sender} à ${receiver}`)
+
     // On type correctement les variables sender et receiver
     try {
         // Validation des entrées
@@ -87,9 +95,16 @@ const inviteCharacter = async (io, socket, sender, receiver) => {
     }
 }
 
+const onReplyToInvite = (event) => {
+    const { io, socket, content } = event
+
+    replyToInvite(io, socket, content.sender, socket.character_id, content.answer)
+}
+
 const replyToInvite = async (io, socket, sender, receiver, answer) => {
     // answer = true / false
 
+    console.log(`[socket] Réponse à l'invitation de ${sender} à ${receiver} : ${answer}`)
     // On type correctement les variables sender et receiver
     sender = mongoose.Types.ObjectId.createFromHexString(sender)
     receiver = mongoose.Types.ObjectId.createFromHexString(receiver)
@@ -119,6 +134,12 @@ const replyToInvite = async (io, socket, sender, receiver, answer) => {
     })
 }
 
+const onPullInviteMembers = (event) => {
+    const { socket, content } = event
+
+    pullInviteMembers(socket, content.sender)
+}
+
 const pullInviteMembers = async (socket, sender) => {
     mongodb.models.Invite.findOne({ sender: sender }).then((invites) => {
         if (!invites) return
@@ -146,7 +167,12 @@ const pullInviteMembers = async (socket, sender) => {
 }
 
 module.exports = {
+    onInviteCharacter,
     inviteCharacter,
+
+    onReplyToInvite,
     replyToInvite,
+
+    onPullInviteMembers,
     pullInviteMembers
 }

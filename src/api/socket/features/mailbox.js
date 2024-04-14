@@ -2,6 +2,12 @@ const mongodb = require('../../../database')
 
 const { getCharacterNameFromId } = require('../../../character')
 
+const onPullMailbox = async (event) => {
+    const { socket } = event
+
+    pullMailBox(socket, socket.character_id)
+}
+
 const pullMailBox = async (socket, character_id) => {
     const character = await mongodb.models.Character.findOne({ _id: character_id })
     let invites = await mongodb.models.Invite.find({ _id: { $in: character.invites }, 'receiver.status': 0 })
@@ -23,5 +29,6 @@ const pullMailBox = async (socket, character_id) => {
 }
 
 module.exports = {
+    onPullMailbox,
     pullMailBox,
 }
