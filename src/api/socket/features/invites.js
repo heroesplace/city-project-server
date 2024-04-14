@@ -26,7 +26,7 @@ const inviteCharacter = async (io, socket, sender, receiver) => {
     // On type correctement les variables sender et receiver
     try {
         // Validation des entrées
-        sender = new mongoose.Types.ObjectId(sender)
+        sender = mongoose.Types.ObjectId.createFromHexString(sender)
         receiver = new mongoose.Types.ObjectId(await getCharacterIdFromName(receiver))
         if (!receiver) throw new Error("CHARACTER_NOT_FOUND")
 
@@ -91,8 +91,8 @@ const replyToInvite = async (io, socket, sender, receiver, answer) => {
     // answer = true / false
 
     // On type correctement les variables sender et receiver
-    sender = new mongoose.Types.ObjectId(sender)
-    receiver = new mongoose.Types.ObjectId(receiver)
+    sender = mongoose.Types.ObjectId.createFromHexString(sender)
+    receiver = mongoose.Types.ObjectId.createFromHexString(receiver)
 
     const character = await mongodb.models.Character.findOne({ _id: receiver })
 

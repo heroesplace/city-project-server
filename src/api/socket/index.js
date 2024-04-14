@@ -20,10 +20,10 @@ const authSocketMiddleware = (socket, next) => {
     const token = socket.handshake.auth.token || socket.handshake.headers.cookie.split("=")[1].split(";")[0] || null
 
     auth.verifyTokenAuthenticity(token).then((decoded) => {
-        socket.account_id = new mongoose.Types.ObjectId(decoded.account_id)
+        socket.account_id = decoded.account_id
         socket.account_name = decoded.account_name
         socket.character_name = decoded.character_name
-        socket.character_id = new mongoose.Types.ObjectId(decoded.character_id)
+        socket.character_id = decoded.character_id
 
         socket.join(decoded.character_id)
 
