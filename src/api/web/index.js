@@ -4,6 +4,8 @@ const account = require("../../account")
 const auth = require("../../auth")
 const cookies = require("../../cookies")
 
+const { destroySession } = require('../socket')
+
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
 
@@ -61,6 +63,13 @@ router.get("/account/logout", (req, res) => {
         httpOnly: false,
         sameSite: 'strict'
     })
+
+    const character_id = jwt.decode(cookies.getCookie(req, "token")).character_id
+
+    // connections[character_id].disconnect()
+
+
+    destroySession(character_id)
 
     res.status(200)
 

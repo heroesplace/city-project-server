@@ -1,7 +1,18 @@
 const auth = require('../../auth')
 const events = require('./events').events
+const socketIO = require('socket.io')
 
 let connections = []
+let io = null
+
+const destroySession = (character_id) => {
+    io.sockets.sockets.forEach((s) => {
+        if (connections[character_id] == s.id) {
+            console.log('[socket] Déconnexion de la session précédente.')
+            s.disconnect()
+        }
+    })
+}
 
 const destroyPreviousSession = (io, socket) => {
     io.sockets.sockets.forEach((s) => {
@@ -45,7 +56,15 @@ const authSocketMiddleware = (socket, next) => {
     }
 }
 
-const listen = (io, callback) => {
+const listen = (server, allowedOrigin, callback) => {
+    io = socketIO(server, {
+        cors: {
+          origin: allowedOrigin,
+          methods: ["GET", "POST"],
+          credentials: true
+        }
+    })
+    
     io.disconnectSockets()
 
     callback()
@@ -54,7 +73,7 @@ const listen = (io, callback) => {
 
     io.on('connection', (socket) => {
         destroyPreviousSession(io, socket)
-        
+
         console.log('[socket] Nouvelle connexion établie.')
 
         for (const [event, handler] of Object.entries(events)) {
@@ -63,7 +82,8 @@ const listen = (io, callback) => {
     })
 }
 
+
 module.exports = {
-    getIo: () => io,
     listen,
+    destroySession
 }

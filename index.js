@@ -1,5 +1,4 @@
 const http = require('http')
-const socketIO = require('socket.io')
 const express = require('express')
 const bodyParser = require('body-parser')
 const socket = require('./src/api/socket')
@@ -10,14 +9,6 @@ const app = express()
 const server = http.createServer(app)
 
 const allowedOrigin = (process.env.NODE_ENV === 'production' ? 'https' : 'http') + "://" + process.env.CLIENT_ADDRESS
-
-const io = socketIO(server, {
-  cors: {
-    origin: allowedOrigin,
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-})
 
 const PORT = 3000
 
@@ -45,7 +36,7 @@ app.use("/api", require('./src/api/web/index'))
 // Connexion à la base de données
 require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS || "localhost"}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5&readPreference=secondary`)
 
-socket.listen(io, () => {
+socket.listen(server, allowedOrigin, () => {
     console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ":" + PORT}`)
 })
 
