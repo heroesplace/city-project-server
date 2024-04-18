@@ -2,16 +2,20 @@ const auth = require('../../auth')
 const events = require('./events').events
 
 const authSocketMiddleware = (socket, next) => {
+    const cookie_token = socket.handshake.headers.cookie.split("; ").filter((cookie) => {
+        return cookie.startsWith("token=")
+    })[0].split("=")[1]
+
+    const token = cookie_token ||  socket.handshake.auth.token
+
     try {
-        if (!socket.handshake.auth.token && !socket.handshake.headers.cookie) {
+        if (!token) {
             throw new Error('No token provided')
         }
     } catch (err) {
         return next(err)
     }
     
-    const token = socket.handshake.auth.token || socket.handshake.headers.cookie.split("=")[1].split(";")[0] || null
-
     auth.verifyTokenAuthenticity(token).then((decoded) => {
         socket.account_id = decoded.account_id
         socket.account_name = decoded.account_name

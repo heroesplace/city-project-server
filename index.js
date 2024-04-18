@@ -26,7 +26,8 @@ app.use((req, res, next) => {
     'Cross-Origin-Embedder-Policy': 'require-corp',
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Credentials': true
+    'Access-Control-Allow-Credentials': true,
+    'Access-Control-Allow-Headers': '*'
   })
   
   next()
