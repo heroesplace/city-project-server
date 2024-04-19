@@ -7,8 +7,11 @@ const { ErrorCode } = require('./api/web/features/errors')
 
 const SECRET_KEY = fs.readFileSync('./private.key', 'utf8')
 
+// Fonction pour décoder un token JWT
+const decodeToken = (token) => jwt_decode(token)
+
 // Fonction pour générer un token JWT
-function generateToken(payload) {
+const generateToken = (payload) => {
     return jwt.sign(payload, SECRET_KEY, {
         algorithm: 'RS256' // Algorithme de signature
     })
@@ -27,22 +30,17 @@ async function verifyTokenAuthenticity(token) {
     })
 }
 
-// Fonction pour décoder un token JWT
-function decodeToken(token) {
-    return jwt_decode(token);
-}
-
 // Fonction pour hacher un mot de passe
-async function hashPassword(password) {
-    const saltRounds = 10; // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
+const hashPassword = async (password) => {
+    const saltRounds = 10 // Nombre de "tour" du hachage (plus le nombre est élevé, plus c'est sécurisé mais plus c'est lent)
     const hash = await bcrypt.hash(password, saltRounds)
 
-    return hash.toString();
+    return hash.toString()
 }
 
 // Fonction pour comparer les mots de passe
-async function comparePasswords(password, hashedPassword) {
-    return await bcrypt.compare(password, hashedPassword);
+const comparePasswords = async (password, hashedPassword) => {
+    return bcrypt.compare(password, hashedPassword)
 }
 
 module.exports = {
@@ -51,4 +49,4 @@ module.exports = {
     decodeToken,
     hashPassword,
     comparePasswords
-};
+}
