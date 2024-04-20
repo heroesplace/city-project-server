@@ -96,8 +96,8 @@ router.get("/account/profile", (req, res) => {
     }
 })
 
-router.get("/account/verify-token", (req, res) => {
-    const token = cookies.getCookie(req, "token")
+router.post("/account/verify-token", (req, res) => {
+    const { token } = req.body
 
     if (token) {
         auth.verifyTokenAuthenticity(token).then(() => {
