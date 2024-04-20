@@ -28,15 +28,7 @@ const destroyPreviousSession = (io, socket) => {
 }
 
 const authSocketMiddleware = (socket, next) => {
-    let token = socket.handshake.auth.token
-
-    if (socket.handshake.headers.cookie) {
-        const cookie_token = socket.handshake.headers.cookie.split("; ").filter((cookie) => {
-            return cookie.startsWith("token=")
-        })[0].split("=")[1]
-
-        token = cookie_token
-    }
+    let token = socket.handshake.query?.token
 
     if (token) {
         auth.verifyTokenAuthenticity(token).then((decoded) => {
