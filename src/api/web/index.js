@@ -37,15 +37,11 @@ router.post("/account/login", (req, res) => {
     const { account_name, password } = req.body
 
     account.login(account_name, password).then((token) => {
-        res.cookie('token', token, {
-            httpOnly: false,
-            sameSite: 'strict'
-        })
-
         res.status(200)
 
         res.json({
             message: "Successfully logged in !",
+            jwt: token,
             status: 200
         })
     }).catch((e) => {
