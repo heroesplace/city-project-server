@@ -22,6 +22,46 @@ const isAlreadyInvited = (sender, receiver) => {
     })
 }
 
+const onInviteDelete = (event) => {
+    const { io, socket } = event
+
+    inviteDelete(io, socket, socket.character_id)
+}
+
+const inviteDelete = async (io, socket, sender) => {
+    console.log("[socket] Suppression de l'invitation de " + sender)
+
+    try {
+
+        console.log("Suppression de l'invitation de " + sender)
+
+        const invite = await mongodb.models.Invite.findOne({ sender: sender })
+        if (!invite) throw new Error("INVITE_NOT_FOUND")
+
+        // Début de la transaction
+        const session = await mongoose.startSession()
+        session.startTransaction()
+
+        try {
+            // Suppression de l'invitation
+            await mongodb.models.Invite.deleteOne({ sender: sender }, { session: session })
+
+            // Suppression de l'invitation dans la liste des invitations des personnages
+            await mongodb.models.Character.updateMany({ _id: { $in: invite.receiver.map((value) => value.character_id) } }, { $pull: { invites: invite._id } }, { session: session })
+
+            await session.commitTransaction()
+            session.endSession()
+        } catch (error) {
+            await session.abortTransaction()
+            session.endSession()
+
+            throw error
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 const onInviteCharacter = (event) => {
     const { io, socket, content } = event
 
@@ -172,6 +212,9 @@ module.exports = {
 
     onReplyToInvite,
     replyToInvite,
+
+    onInviteDelete,
+    inviteDelete,
 
     onPullInviteMembers,
     pullInviteMembers

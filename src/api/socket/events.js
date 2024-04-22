@@ -1,7 +1,7 @@
 const { onPushMessage } = require('./features/chat')
 const { onPullMailbox } = require('../socket/features/mailbox')
 
-const { onInviteCharacter, onReplyToInvite, onPullInviteMembers } = require('../socket/features/invites')
+const { onInviteCharacter, onReplyToInvite, onInviteDelete, onPullInviteMembers } = require('../socket/features/invites')
 
 exports.events = {
     'push_chat_message': onPushMessage,
@@ -9,5 +9,6 @@ exports.events = {
 
     'push_invite_character': onInviteCharacter,
     'push_invite_reply': onReplyToInvite,
-    'pull_invite_members': onPullInviteMembers
+    'push_invite_delete': onInviteDelete,
+    'pull_invite_members': onPullInviteMembers,
 }
