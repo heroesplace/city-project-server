@@ -63,11 +63,6 @@ router.post("/account/verify-token", (req, res) => {
         }).catch((err) => {
             res.status(403)
 
-            res.clearCookie('token', {
-                httpOnly: false,
-                sameSite: 'strict'
-            })
-
             res.json({
                 message: err.message,
                 status: 403

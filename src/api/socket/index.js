@@ -1,8 +1,9 @@
 const auth = require('../../auth')
 const events = require('./events').events
 const socketIO = require('socket.io')
+const db = require('../../database')
 
-let connections = []
+let connections = {}
 let io = null
 
 const destroySession = (character_id) => {
@@ -24,21 +25,26 @@ const destroyPreviousSession = (io, socket) => {
 
     connections[socket.character_id] = socket.id
 
-    console.log(connections)
+    console.log("Socket connections : ", connections)
 }
 
 const authSocketMiddleware = (socket, next) => {
     let token = socket.handshake.query?.token
 
     if (token) {
-        auth.verifyTokenAuthenticity(token).then((decoded) => {
-            socket.account_id = decoded.account_id
-            socket.account_name = decoded.account_name
-            socket.character_name = decoded.character_name
-            socket.character_id = decoded.character_id
-    
-            socket.join(decoded.character_id)
-    
+        auth.verifyTokenAuthenticity(token).then(async (decoded) => {
+            const r = await db.query('SELECT accounts.id account_id, accounts.name account_name, characters.id character_id, characters.name character_name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.id = $1', [decoded.account_id])
+
+            const infos = r.rows[0]
+
+            socket.account_id = infos.account_id
+            socket.account_name = infos.account_name
+
+            socket.character_id = infos.character_id
+            socket.character_name = infos.character_name
+
+            socket.join(socket.character_id)
+
             next()
         }).catch(err => {
             return next(err)
@@ -64,9 +70,9 @@ const listen = (server, allowedOrigin, callback) => {
     io.use((socket, next) => authSocketMiddleware(socket, next))
 
     io.on('connection', (socket) => {
-        destroyPreviousSession(io, socket)
-
         console.log('[socket] Nouvelle connexion établie.')
+
+        destroyPreviousSession(io, socket)
 
         for (const [event, handler] of Object.entries(events)) {
             socket.on(event, (content) => handler({ io: io, socket: socket, content: content }))

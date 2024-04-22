@@ -1,7 +1,7 @@
 const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
-// const socket = require('./src/api/socket')
+const socket = require('./src/api/socket')
 const db = require('./src/database')
 
 require('dotenv').config()
@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use('/api', require('./src/api/web/index'))
-/*
+
 socket.listen(server, {
   cors: {
     origin: allowedOrigin,
@@ -43,8 +43,6 @@ socket.listen(server, {
 }, () => {
   console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ':' + PORT}`)
 })
-
-*/
 
 // Lancement du serveur web
 server.listen(PORT, () => {

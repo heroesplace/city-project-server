@@ -8,7 +8,9 @@ async function register(account_name, character_name, email_address, password) {
   try {
     await client.query('BEGIN')
 
-    const res = await client.query('INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id ', [account_name, email_address, password])
+    const hashedPassword = await auth.hashPassword(password)
+
+    const res = await client.query('INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id ', [account_name, email_address, hashedPassword])
                 await client.query('INSERT INTO characters (name, account_id) VALUES ($1, $2) RETURNING id', [character_name, res.rows[0].id])
 
     await client.query('COMMIT')

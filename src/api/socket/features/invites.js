@@ -1,26 +1,10 @@
-const mongodb = require('../../../database')
-const mongoose = require('mongoose')
-
 const moment = require('moment')
 
-const { getCharacterIdFromName } = require('../../../character')
+const db = require('../../../database')
+
 const { pullMailBox } = require('./mailbox')
 
 const { handleSocketError } = require('../errors')
-
-const isAlreadyInvited = (sender, receiver) => {
-    return mongodb.models.Invite.findOne({ sender: sender }).then((invite) => {
-        if (invite) {
-            for (const [_, value] of Object.entries(invite.receiver)) {
-                if (value.character_id.toString() == receiver.toString()) {
-                    return true
-                }
-            }
-        }
-
-        return false
-    })
-}
 
 const onInviteDelete = (event) => {
     const { io, socket } = event
