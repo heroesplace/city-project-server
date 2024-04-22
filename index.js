@@ -1,7 +1,8 @@
 const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
-const socket = require('./src/api/socket')
+// const socket = require('./src/api/socket')
+const db = require('./src/database')
 
 require('dotenv').config()
 
@@ -32,10 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use('/api', require('./src/api/web/index'))
-
-// Connexion à la base de données
-require('./src/database').connect(`mongodb://${process.env.DATABASE_ADDRESS || 'localhost'}:27017/city-project?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.5&readPreference=secondary`)
-
+/*
 socket.listen(server, {
   cors: {
     origin: allowedOrigin,
@@ -45,6 +43,8 @@ socket.listen(server, {
 }, () => {
   console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ':' + PORT}`)
 })
+
+*/
 
 // Lancement du serveur web
 server.listen(PORT, () => {

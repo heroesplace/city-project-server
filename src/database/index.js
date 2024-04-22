@@ -1,23 +1,19 @@
-const mongoose = require('mongoose')
+const pg = require('pg')
+const { Pool } = pg
+ 
+const pool = new Pool({
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: 'salut',
+    database: 'cityproject'
+})
+ 
+const query = (text, params, callback) => pool.query(text, params, callback)
 
-const { models } = require('./models')
-
-function connect(uri) {
-    console.log("[mongodb] Tentative de connexion à la base de données..")
-
-    mongoose.connect(uri).then(
-        () => {
-            console.log("[mongodb] Connexion à la base de données réussie !")
-        },
-        err => {
-            console.log("[mongodb] Echec de la connexion à la base de données !")
-
-            process.exit(1)
-        }
-    )
-}
+const getClient = () => pool.connect()
 
 module.exports = {
-    connect,
-    models
+    query,
+    getClient
 }

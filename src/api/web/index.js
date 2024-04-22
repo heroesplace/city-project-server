@@ -1,20 +1,16 @@
 const router = require('express').Router()
-const jwt = require("jsonwebtoken");
 const account = require("../../account")
 const auth = require("../../auth")
-const cookies = require("../../cookies")
-
-const { destroySession } = require('../socket')
 
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
 
     if (account_name && character_name && email_address && password) {
-        account.register(account_name, character_name, email_address, password).then((e) => {
+        account.register(account_name, character_name, email_address, password).then(() => {
             res.status(200)
 
             res.json({
-                message: e,
+                message: 'Successfully registered !',
                 status: 200
             })
         }).catch((e) => {
@@ -53,25 +49,6 @@ router.post("/account/login", (req, res) => {
     })
 })
 
-// GET
-router.get("/account/logout", (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: false,
-        sameSite: 'strict'
-    })
-
-    const character_id = jwt.decode(cookies.getCookie(req, "token")).character_id
-
-    destroySession(character_id)
-
-    res.status(200)
-
-    res.json({
-        message: "Successfully logged out !",
-        status: 200
-    })
-})
-
 router.post("/account/verify-token", (req, res) => {
     const { token } = req.body
 
@@ -80,7 +57,7 @@ router.post("/account/verify-token", (req, res) => {
             res.status(200)
     
             res.json({
-                message: "Token is valid !",
+                message: "VALID_TOKEN",
                 status: 200
             })
         }).catch((err) => {
@@ -103,6 +80,5 @@ router.post("/account/verify-token", (req, res) => {
         })
     }
 })
-
 
 module.exports = router
