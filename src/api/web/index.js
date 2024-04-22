@@ -62,9 +62,6 @@ router.get("/account/logout", (req, res) => {
 
     const character_id = jwt.decode(cookies.getCookie(req, "token")).character_id
 
-    // connections[character_id].disconnect()
-
-
     destroySession(character_id)
 
     res.status(200)
@@ -73,23 +70,6 @@ router.get("/account/logout", (req, res) => {
         message: "Successfully logged out !",
         status: 200
     })
-})
-
-router.get("/account/profile", (req, res) => {
-    if (req.headers.cookie) {
-        const token = cookies.getCookie(req, "token")
-
-        if (token) {
-            res.json({
-                "username": jwt.decode(token)
-            })
-        }
-    } else {
-        res.status(403)
-        res.json({
-            message: "Not logged in !",
-        })
-    }
 })
 
 router.post("/account/verify-token", (req, res) => {

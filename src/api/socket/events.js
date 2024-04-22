@@ -9,5 +9,5 @@ exports.events = {
 
     'push_invite_character': onInviteCharacter,
     'push_invite_reply': onReplyToInvite,
-    'push_invite_members': onPullInviteMembers
+    'pull_invite_members': onPullInviteMembers
 }

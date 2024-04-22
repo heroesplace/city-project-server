@@ -135,9 +135,9 @@ const replyToInvite = async (io, socket, sender, receiver, answer) => {
 }
 
 const onPullInviteMembers = (event) => {
-    const { socket, content } = event
+    const { socket } = event
 
-    pullInviteMembers(socket, content.sender)
+    pullInviteMembers(socket, socket.character_id)
 }
 
 const pullInviteMembers = async (socket, sender) => {
