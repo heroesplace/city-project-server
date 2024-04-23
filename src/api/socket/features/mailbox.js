@@ -1,6 +1,4 @@
-const mongodb = require('../../../database')
-
-const { getCharacterNameFromId } = require('../../../character')
+const db = require('../../../database')
 
 const onPullMailbox = async (event) => {
     const { socket } = event
@@ -9,21 +7,18 @@ const onPullMailbox = async (event) => {
 }
 
 const pullMailBox = async (socket, character_id) => {
-    const character = await mongodb.models.Character.findOne({ _id: character_id })
-    let invites = await mongodb.models.Invite.find({ _id: { $in: character.invites }, 'receiver.status': 0 })
+    const r = await db.query('SELECT * FROM invites JOIN characters ON sender_id = characters.id WHERE receiver_id = $1 AND status = 0', [character_id])
 
-    for (let i = 0; i < invites.length; i++) {
-        let value = invites[i]
-
-        invites[i] = {
-            _id: value._id,
+    const invites = r.rows.map(value => {
+        return {
+            _id: value.id,
             sender: {
-                _id: value.sender,
-                character_name: await getCharacterNameFromId(value.sender)
+                _id: value.sender_id,
+                character_name: value.name
             },
             type: "invite"
         }
-    }
+    })
 
     socket.emit("update_character_mailbox", { mail_list: invites })
 }

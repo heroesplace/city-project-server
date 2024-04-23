@@ -23,8 +23,6 @@ const pullMessage = async (socket, channel) => {
 
     const message = request.rows[0]
 
-    console.log(message)
-
     socket.emit('update_chat', {content: message.content, author: message.author })
 }
 
