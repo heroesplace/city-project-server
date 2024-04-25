@@ -21,23 +21,26 @@ async function register(account_name, character_name, email_address, password) {
     client.release()
   }
 }
-async function login (account_name, password) {
-  const request = await db.query(`SELECT id, name, password FROM accounts WHERE name = $1`, [account_name])
 
-  if (request.rows.length === 0) throw new Error("Account not found.")
+async function login(account_name, password) {
+  const r1 = await db.query(`SELECT id, password FROM accounts WHERE name = $1`, [account_name])
 
-  const account = request.rows[0]
+  if (r1.rows.length === 0) throw new Error("Account not found.")
+
+  const account = r1.rows[0]
 
   const passwordMatches = await auth.comparePasswords(password, account.password)
 
-  if (passwordMatches) {
-    return auth.generateToken({
-      account_id: account.id,
-      account_name: account.name
-    })
-  } else {
-    throw new Error('Wrong password !')
-  }
+  if (!passwordMatches) throw new Error('Wrong password !')
+
+  const r2 = await db.query('SELECT characters.name name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.name = $1', [account_name])
+
+  const characters = r2.rows[0]
+
+  return auth.generateToken({
+    account_id: account.id,
+    character_name: characters.name 
+  })
 }
 
 module.exports = {

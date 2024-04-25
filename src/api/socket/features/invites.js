@@ -16,32 +16,27 @@ const inviteCharacter = async (io, socket, sender, receiver) => {
     try {
         console.log(`[socket] Invitation de ${sender} à ${receiver}`)
 
-        // On vérifie que le personnage existe et on récupère son ID
         const r1 = await db.query('SELECT id FROM characters WHERE name = $1', [receiver])
 
-        if (r1.rows.length === 0) {
-            throw new Error("CHARACTER_NOT_FOUND")
-        } else {
-            const receiver = r1.rows[0].id
+        if (r1.rows.length === 0) throw new Error("CHARACTER_NOT_FOUND")
 
-            if (sender === receiver) throw new Error("SELF_INVITE")
+        const receiver_id = r1.rows[0].id
 
-            const r2 = await db.query('SELECT * FROM invites WHERE sender_id = $1 AND receiver_id = $2', [sender, r1.rows[0].id])
+        if (sender === receiver_id) throw new Error("SELF_INVITE")
 
-            // Si l'invitation n'existe pas, on la crée
-            if (r2.rows.length === 0) {
-                await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, r1.rows[0].id])
-            } else {
-                throw new Error("ALREADY_INVITED")
-            }
-        }
+        const r2 = await db.query('SELECT * FROM invites WHERE sender_id = $1 AND receiver_id = $2', [sender, receiver_id])
+
+        // Si l'invitation n'existe pas, on la crée
+        if (r2.rows.length !== 0) throw new Error("ALREADY_INVITED")
+
+        await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiver_id])
+
+        await pullInviteMembers(socket, sender)
+        // On met à jour la messagerie du client qui a recu l'invitation
+        await pullMailBox(io.to(receiver_id), receiver_id)
     } catch (error) {
         handleSocketError(socket, error.message)
     }
-    
-    await pullInviteMembers(socket, sender)
-    // On met à jour la messagerie du client qui a recu l'invitation
-    // await pullMailBox(io.to(receiver.toString()), receiver.toString())
 }
 
 const onInviteDelete = (event) => {
@@ -53,6 +48,9 @@ const onInviteDelete = (event) => {
 const inviteDelete = async (io, socket, sender) => {
     console.log("[socket] Suppression de l'invitation de " + sender)
 
+    const invites = await db.query('DELETE FROM invites WHERE sender_id = $1 RETURNING receiver_id', [sender])
+
+    invites.rows.forEach(i => pullMailBox(io, i.receiver_id))
 }
 
 const onReplyToInvite = (event) => {
