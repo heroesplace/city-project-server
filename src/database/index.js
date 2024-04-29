@@ -2,11 +2,11 @@ const pg = require('pg')
 const { Pool } = pg
  
 const pool = new Pool({
-    host: 'localhost',
+    host: process.env.DATABASE_ADDRESS || 'localhost',
     port: 5432,
-    user: 'postgres',
-    password: 'salut',
-    database: 'cityproject'
+    database: 'cityproject',
+    user: 'cityproject',
+    password: 'salut'
 })
  
 const query = (text, params, callback) => pool.query(text, params, callback)
