@@ -16,6 +16,7 @@ async function register(account_name, character_name, email_address, password) {
     await client.query('COMMIT')
   } catch (e) {
     await client.query('ROLLBACK')
+    console.log(e)
     throw new Error('An error has occured !')
   } finally {
     client.release()

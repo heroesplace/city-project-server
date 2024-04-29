@@ -8,6 +8,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_ADDRESS=192.168.1.39
-      - SERVER_ADDRESS=game.devsoleo.fr
-      - CLIENT_ADDRESS=devsoleo.fr
+      - DATABASE_HOST=
+      - DATABASE_USER=
+      - DATABASE_PASSWORD=
+      - CLIENT_ADDRESS=

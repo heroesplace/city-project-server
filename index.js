@@ -41,10 +41,10 @@ socket.listen(server, {
     credentials: true
   }
 }, () => {
-  console.log(`[ws] Serveur socket en écoute | wss://${process.env.SERVER_ADDRESS + ':' + PORT}`)
+  console.log(`[ws] Serveur socket en écoute sur le port ${PORT}`)
 })
 
 // Lancement du serveur web
 server.listen(PORT, () => {
-  console.log(`[http] Serveur web en écoute | http://${process.env.SERVER_ADDRESS + ':' + PORT}`)
+  console.log(`[http] Serveur web en écoute sur le port ${PORT}`)
 })
