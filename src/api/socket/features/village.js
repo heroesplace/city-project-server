@@ -1,11 +1,6 @@
 const db = require('../../../database')
-const { VillageError, UniqueConstraintError } = require('../../../errors')
-
-const onVillageExists = (event) => {
-    const { io, socket, content } = event
-
-    socket.emit('village_exists', { exists: false })
-}
+const { isVillager } = require('./character')
+const { CharacterError, VillageError, UniqueConstraintError } = require('../../../errors')
 
 const onCreateVillage = async (event) => {
     const { socket, content } = event
@@ -19,19 +14,22 @@ const onCreateVillage = async (event) => {
 
 const createVillage = async (name, founder) => {
     name = name.toLowerCase()
-    
+
     try {
+        await isVillager(founder).then((result) => {
+            if (result) throw new CharacterError('IS_VILLAGE_MEMBER')
+        })
+    
         await db.query('INSERT INTO villages (name, founder_id) VALUES ($1, $2)', [name, founder])
 
         console.log(`[socket] Village ${name} créé par ${founder}`)
     } catch (e) {
         if (e instanceof UniqueConstraintError) throw new VillageError('VILLAGE_NAME_TAKEN')
+        throw e
     }
 }
 
 module.exports = {
-    onVillageExists,
-
     onCreateVillage,
     createVillage
 }

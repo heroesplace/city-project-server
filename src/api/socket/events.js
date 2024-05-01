@@ -1,6 +1,7 @@
 const { onPushMessage } = require('./features/chat')
 const { onPullMailbox } = require('../socket/features/mailbox')
 const { onVillageExists, onCreateVillage } = require('../socket/features/village')
+const { onIsVillager } = require('../socket/features/character')
 
 const invite = require('../socket/features/invites')
 
@@ -15,7 +16,7 @@ exports.events = {
 
     'invite_pull_characters': invite.charts.onPullCharacters,
     'pull_character_mailbox': onPullMailbox,
-    'village_exists': onVillageExists,
 
-    'village_create': onCreateVillage
+    'village_create': onCreateVillage,
+    'chracter_is_villager': onIsVillager
 }

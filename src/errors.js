@@ -24,14 +24,14 @@ class DisplayableError extends Error {
 class VillageError extends DisplayableError {
     static types = [
         "VILLAGE_NOT_FOUND",
-        "VILLAGE_NAME_TAKEN",
-        "ALREADY_A_VILLAGER"
+        "VILLAGE_NAME_TAKEN"
     ]
 }
 
 class CharacterError extends DisplayableError {
     static types = [
-        "CHARACTER_NOT_FOUND"
+        "CHARACTER_NOT_FOUND",
+        "IS_VILLAGE_MEMBER",
     ]
 }
 
