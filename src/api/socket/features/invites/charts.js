@@ -2,7 +2,7 @@ const db = require('../../../../database')
 
 const { pullMailBox } = require('../mailbox')
 
-const { CharacterError, InviteError } = require('../../../../errors')
+const { CharacterError, InviteError } = require('../../errors')
 
 const onAddCharacter = async (event) => {
     const { io, socket, content } = event

@@ -1,6 +1,6 @@
 const pg = require('pg')
 const { Pool } = pg
-const { UniqueConstraintError, RequestSyntaxError } = require('../errors')
+const { UniqueConstraintError, RequestSyntaxError } = require('./errors')
 
 require('dotenv').config()
 

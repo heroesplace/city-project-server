@@ -2,31 +2,30 @@ const router = require('express').Router()
 const account = require("../../account")
 const auth = require("../../auth")
 
+router.get("/discord", async (req, res) => {
+    const code = req.query.code
+
+    if (!code) return
+    
+    await exchange_code(code).then((oauthData) => {
+        console.log(oauthData)
+    })
+
+    res.redirect("http://localhost:3002/game")
+})
+
 router.post("/account/register", (req, res) => {
     const { account_name, character_name, email_address, password } = req.body
 
-    if (account_name && character_name && email_address && password) {
-        account.register(account_name, character_name, email_address, password).then(() => {
-            res.status(200)
+    account.register(account_name, character_name, email_address, password).then(() => {
+        res.status(200)
 
-            res.json({
-                message: 'Successfully registered !',
-                status: 200
-            })
-        }).catch((e) => {
-            res.status(403)
-            res.json({
-                message: e.message,
-                status: 403
-            })
-        })
-    } else {
-        res.status(403)
-        res.json({
-            message: "Missing fields !",
-            status: 403
-        })
-    }
+        res.json({ message: "SUCCESSFULLY_REGISTERED" })
+    }).catch((e) => {
+        res.status(400)
+        // NOTE: This is a security issue, we should not return the error message to the client
+        res.json({ message: e.message })
+    })
 })
 
 router.post("/account/login", (req, res) => {
@@ -35,45 +34,31 @@ router.post("/account/login", (req, res) => {
     account.login(account_name, password).then((token) => {
         res.status(200)
 
-        res.json({
-            message: "Successfully logged in !",
-            jwt: token,
-            status: 200
-        })
+        res.json({ message: "SUCCESSFULLY_LOGGED_IN", jwt: token })
     }).catch((e) => {
-        res.status(403)
-        res.json({
-            message: e.message,
-            status: 403
-        })
+        res.status(400)
+        // NOTE: This is a security issue, we should not return the error message to the client
+        res.json({ message: e.message })
     })
 })
 
 router.post("/account/verify-token", (req, res) => {
     const { token } = req.body
 
-    if (token) {
-        auth.verifyTokenAuthenticity(token).then(() => {
-            res.status(200)
-    
-            res.json({
-                message: "VALID_TOKEN",
-                status: 200
-            })
-        }).catch((err) => {
-            res.status(403)
-
-            res.json({
-                message: err.message,
-                status: 403
-            })
-        })
-    } else {
-        res.status(403)
-        res.json({
-            message: "Not logged in !",
-        })
+    if (!token) {
+        res.status(400)
+        res.json({ message: "NO_TOKEN_PROVIDED" })
     }
+
+    auth.verifyTokenAuthenticity(token).then(() => {
+        res.status(200)
+
+        res.json({ message: "VALID_TOKEN" })
+    }).catch(() => {
+        res.status(400)
+
+        res.json({ message: "INVALID_TOKEN" })
+    })
 })
 
 module.exports = router

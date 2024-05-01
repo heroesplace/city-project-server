@@ -1,6 +1,8 @@
 const db = require('../../../database')
 const { isVillager } = require('./character')
-const { CharacterError, VillageError, UniqueConstraintError } = require('../../../errors')
+
+const { UniqueConstraintError } = require('../../../database/errors')
+const { CharacterError, VillageError } = require('../errors')
 
 const onCreateVillage = async (event) => {
     const { socket, content } = event
