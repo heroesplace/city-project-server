@@ -2,39 +2,39 @@ const db = require('../../../../database')
 
 const { pullMailBox } = require('../mailbox')
 
-const { handleSocketError } = require('../../errors')
+const { CharacterError, InviteError } = require('../../../../errors')
 
-const onAddCharacter = (event) => {
+const onAddCharacter = async (event) => {
     const { io, socket, content } = event
 
-    addCharacter(io, socket, socket.character_id, content)
+    try {
+        await addCharacter(io, socket, socket.character_id, content)
+    } catch (error) {
+        error.display(socket)
+    }
 }
 
 const addCharacter = async (io, socket, sender, receiver) => {
-    try {
-        console.log(`[socket] Invitation de ${sender} à ${receiver}`)
+    console.log(`[socket] Invitation de ${sender} à ${receiver}`)
 
-        const r1 = await db.query('SELECT id FROM characters WHERE name = $1', [receiver])
+    const r1 = await db.query('SELECT id FROM characters WHERE name = $1', [receiver])
 
-        if (r1.rows.length === 0) throw new Error("CHARACTER_NOT_FOUND")
+    if (r1.rows.length === 0) throw new CharacterError("CHARACTER_NOT_FOUND")
 
-        const receiver_id = r1.rows[0].id
+    const receiver_id = r1.rows[0].id
 
-        if (sender === receiver_id) throw new Error("SELF_INVITE")
+    if (sender === receiver_id) throw new InviteError("SELF_INVITE")
 
-        const r2 = await db.query('SELECT * FROM invites WHERE sender_id = $1 AND receiver_id = $2', [sender, receiver_id])
+    const r2 = await db.query('SELECT * FROM invites WHERE sender_id = $1 AND receiver_id = $2', [sender, receiver_id])
 
-        // Si l'invitation n'existe pas, on la crée
-        if (r2.rows.length !== 0) throw new Error("ALREADY_INVITED")
+    // Si l'invitation n'existe pas, on la crée
+    if (r2.rows.length !== 0) throw new InviteError("ALREADY_INVITED")
 
-        await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiver_id])
+    await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiver_id])
 
-        await pullCharacters(socket, sender)
-        // On met à jour la messagerie du client qui a recu l'invitation
-        await pullMailBox(io.to(receiver_id), receiver_id)
-    } catch (error) {
-        handleSocketError(socket, error.message)
-    }
+    await pullCharacters(socket, sender)
+    // On met à jour la messagerie du client qui a recu l'invitation
+    await pullMailBox(io.to(receiver_id), receiver_id)
 }
 
 const onRemoveCharacter = (event) => {
@@ -93,7 +93,7 @@ const pullCharacters = async (socket, sender) => {
 
         socket.emit('invite_pull_characters', { members_list: r.rows })
     } catch (error) {
-        handleSocketError(socket, error.message)
+        console.log(error.message)
     }
 }
 

@@ -5,10 +5,10 @@ services:
     image: ghcr.io/devsoleo/city-project-server:main
     container_name: city-project-server
     ports:
-      - "3000:3000"
+      - 3000:3000
     environment:
       - NODE_ENV=production
-      - DATABASE_HOST=
-      - DATABASE_USER=
-      - DATABASE_PASSWORD=
       - CLIENT_ADDRESS=
+      - PGHOST=
+      - PGUSER=
+      - PGPASSWORD=

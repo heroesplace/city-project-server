@@ -3,6 +3,10 @@ const db = require('./database')
 
 // Fonction pour gérer l'inscription
 async function register(account_name, character_name, email_address, password) {
+  account_name = account_name.toLowerCase()
+  character_name = character_name.toLowerCase()
+  email_address = email_address.toLowerCase()
+
   const client = await db.getClient()
 
   try {
@@ -24,6 +28,8 @@ async function register(account_name, character_name, email_address, password) {
 }
 
 async function login(account_name, password) {
+  account_name = account_name.toLowerCase()
+
   const r1 = await db.query(`SELECT id, password FROM accounts WHERE name = $1`, [account_name])
 
   if (r1.rows.length === 0) throw new Error("Account not found.")

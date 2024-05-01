@@ -25,7 +25,7 @@ const destroyPreviousSession = (io, socket) => {
 
     connections[socket.character_id] = socket.id
 
-    console.log("Socket connections : ", connections)
+    console.log("[socket] Sessions : ", connections)
 }
 
 const authSocketMiddleware = (socket, next) => {
