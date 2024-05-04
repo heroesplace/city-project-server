@@ -1,14 +1,11 @@
-const db = require('../../../database')
+import db from '../../../database/index.js'
 
-const onPushMessage = (event) => {
-    const { io, socket, content } = event
-
+const onPushMessage = ({ io, socket, content }) => {
     pushMessage(io, content, socket.character_id)
 }
 
 const pushMessage = async (io, content, author) => {
-    if (content == '') return
-    if (content.length > 500) return
+    if (content === '' || content.length > 500) return
 
     console.log(`[socket] Message envoyé par ${author} : ${content}`)
 
@@ -18,15 +15,11 @@ const pushMessage = async (io, content, author) => {
 }
 
 const pullMessage = async (socket, channel) => {
-    // Get the 1 last message, select content author
     const request = await db.query('SELECT content, characters.name author FROM messages JOIN characters ON author = characters.id ORDER BY messages.id DESC LIMIT 1')
 
     const message = request.rows[0]
 
-    socket.emit('update_chat', {content: message.content, author: message.author })
+    socket.emit('update_chat', { content: message.content, author: message.author })
 }
 
-module.exports = {
-    onPushMessage,
-    pushMessage
-}
+export { onPushMessage, pushMessage }

@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
-const jwt_decode = require('jwt-decode')
-const bcrypt = require('bcrypt')
-const fs = require('fs')
+import jwt from 'jsonwebtoken'
+import jwt_decode from 'jwt-decode'
+import bcrypt from 'bcrypt'
+import fs from 'fs'
 
 const SECRET_KEY = fs.readFileSync('./config/private.key', 'utf8')
 
@@ -16,7 +16,7 @@ const generateToken = (payload) => {
 }
 
 // Fonction pour vérifier l'authenticité d'un token JWT
-async function verifyTokenAuthenticity(token) {
+const verifyTokenAuthenticity = async (token) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, SECRET_KEY, (err, decoded) => {
             if (err) {
@@ -41,7 +41,7 @@ const comparePasswords = async (password, hashedPassword) => {
     return bcrypt.compare(password, hashedPassword)
 }
 
-module.exports = {
+export default {
     generateToken,
     verifyTokenAuthenticity,
     decodeToken,

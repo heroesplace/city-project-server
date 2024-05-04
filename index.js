@@ -1,15 +1,16 @@
-const http = require('http')
-const express = require('express')
-const bodyParser = require('body-parser')
-const socket = require('./src/api/socket')
-const db = require('./src/database')
+import http from 'http'
+import express from 'express'
+import bodyParser from 'body-parser'
+import socket from './src/api/socket/index.js'
+import dotenv from 'dotenv'
+import apiRouter from './src/api/web/index.js'
 
-require('dotenv').config()
+dotenv.config()
 
 const app = express()
 const server = http.createServer(app)
 
-const allowedOrigin = (process.env.NODE_ENV === 'production' ? 'https' : 'http') + '://' + process.env.CLIENT_ADDRESS
+const allowedOrigin = `${process.env.NODE_ENV === 'production' ? 'https' : 'http'}://${process.env.CLIENT_ADDRESS}`
 
 const PORT = 3000
 
@@ -27,12 +28,10 @@ app.use((req, res, next) => {
 
 app.use(express.static('public', { dotfiles: 'allow' }))
 
-// console.log("https://" + process.env.CLIENT_ADDRESS + ":" + process.env.CLIENT_PORT)
-
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.use('/api', require('./src/api/web/index'))
+app.use('/api', apiRouter)
 
 socket.listen(server, {
   cors: {

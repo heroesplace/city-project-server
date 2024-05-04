@@ -1,6 +1,6 @@
-const auth = require('./auth')
-const db = require('./database')
-const { UniqueConstraintError } = require('./database/errors')
+import auth from './auth.js'
+import db from './database/index.js'
+import { UniqueConstraintError } from './database/errors.js'
 
 // Fonction pour gérer l'inscription
 async function register(account_name, character_name, email_address, password) {
@@ -17,15 +17,16 @@ async function register(account_name, character_name, email_address, password) {
 
     const hashedPassword = await auth.hashPassword(password)
 
-    const res = await client.query('INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id ', [account_name, email_address, hashedPassword])
-                await client.query('INSERT INTO characters (name, account_id) VALUES ($1, $2) RETURNING id', [character_name, res.rows[0].id])
+    const res = await db.queryTransaction(client, 'INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id ', [account_name, email_address, hashedPassword])
+                await db.queryTransaction(client, 'INSERT INTO characters (name, account_id) VALUES ($1, $2) RETURNING id', [character_name, res.rows[0].id])
 
     await client.query('COMMIT')
   } catch (e) {
     await client.query('ROLLBACK')
-    // TODO : Gérer les erreurs correctement pour les transactions également
-    if (e.code == '23505') throw new Error('ACCOUNT_ALREADY_EXISTS')
-    throw new e
+    if (e instanceof UniqueConstraintError) {
+      console.log(e)
+      // throw new Error('ACCOUNT_ALREADY_EXISTS')
+    }
   } finally {
     client.release()
   }
@@ -54,7 +55,7 @@ async function login(account_name, password) {
   })
 }
 
-module.exports = {
+export default {
   register,
   login
 }

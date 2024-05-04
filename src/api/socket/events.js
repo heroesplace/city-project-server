@@ -1,11 +1,12 @@
-const { onPushMessage } = require('./features/chat')
-const { onPullMailbox } = require('../socket/features/mailbox')
-const { onVillageExists, onCreateVillage } = require('../socket/features/village')
-const { onIsVillager } = require('../socket/features/character')
+import { onPushMessage } from './features/chat.js'
+import { onPullMailbox } from '../socket/features/mailbox.js'
+import { onCreateVillage } from '../socket/features/village.js'
+import { onIsVillager } from '../socket/features/character.js'
+import { onPullMap, onPlayerMove } from '../socket/features/map.js'
 
-const invite = require('../socket/features/invites')
+import invite from '../socket/features/invites.js'
 
-exports.events = {
+const events = {
     'push_chat_message': onPushMessage,
 
     'invite_add_character': invite.charts.onAddCharacter,
@@ -18,5 +19,9 @@ exports.events = {
     'pull_character_mailbox': onPullMailbox,
 
     'village_create': onCreateVillage,
-    'chracter_is_villager': onIsVillager
+    'chracter_is_villager': onIsVillager,
+    'map': onPullMap,
+    "move": onPlayerMove
 }
+
+export { events }

@@ -1,6 +1,9 @@
-const router = require('express').Router()
-const account = require("../../account")
-const auth = require("../../auth")
+import { Router } from 'express'
+import account from '../../account.js'
+import auth from '../../auth.js'
+import { exchange_code } from './features/discord.js'
+
+const router = Router()
 
 router.get("/discord", async (req, res) => {
     const code = req.query.code
@@ -61,4 +64,4 @@ router.post("/account/verify-token", (req, res) => {
     })
 })
 
-module.exports = router
+export default router

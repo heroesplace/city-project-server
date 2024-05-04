@@ -1,3 +1,3 @@
-const charts = require('./invites/charts')
+import charts from './invites/charts.js'
 
-exports.charts = charts
+export default { charts }

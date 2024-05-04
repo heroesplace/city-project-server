@@ -1,11 +1,10 @@
-const db = require('../../../database')
-const { isVillager } = require('./character')
+import db from '../../../database/index.js'
+import { isVillager } from './character.js'
 
-const { UniqueConstraintError } = require('../../../database/errors')
-const { CharacterError, VillageError } = require('../errors')
+import { UniqueConstraintError } from '../../../database/errors.js'
+import { CharacterError, VillageError } from '../errors.js'
 
-const onCreateVillage = async (event) => {
-    const { socket, content } = event
+const onCreateVillage = async ({ socket, content }) => {
 
     try {
         await createVillage(content.name, socket.character_id)
@@ -31,7 +30,7 @@ const createVillage = async (name, founder) => {
     }
 }
 
-module.exports = {
+export {
     onCreateVillage,
     createVillage
 }

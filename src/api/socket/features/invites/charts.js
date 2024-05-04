@@ -1,12 +1,8 @@
-const db = require('../../../../database')
+import db from '../../../../database/index.js'
+import { pullMailBox } from '../mailbox.js'
+import { CharacterError, InviteError } from '../../errors.js'
 
-const { pullMailBox } = require('../mailbox')
-
-const { CharacterError, InviteError } = require('../../errors')
-
-const onAddCharacter = async (event) => {
-    const { io, socket, content } = event
-
+const onAddCharacter = async ({ io, socket, content }) => {
     try {
         await addCharacter(io, socket, socket.character_id, content)
     } catch (error) {
@@ -27,29 +23,23 @@ const addCharacter = async (io, socket, sender, receiver) => {
 
     const r2 = await db.query('SELECT * FROM invites WHERE sender_id = $1 AND receiver_id = $2', [sender, receiver_id])
 
-    // Si l'invitation n'existe pas, on la crée
     if (r2.rows.length !== 0) throw new InviteError("ALREADY_INVITED")
 
     await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiver_id])
 
     await pullCharacters(socket, sender)
-    // On met à jour la messagerie du client qui a recu l'invitation
     await pullMailBox(io.to(receiver_id), receiver_id)
 }
 
-const onRemoveCharacter = (event) => {
-    const { io, socket, content } = event
-
+const onRemoveCharacter = ({ io, socket, content }) => {
     removeCharacter(io, socket, socket.character_id, content)
 }
 
 const removeCharacter = async (io, socket, sender, receiver) => {
+    // Implémenter la suppression du personnage ici
+}
 
-}        
-
-const onCancel = (event) => {
-    const { io, socket } = event
-
+const onCancel = ({ io, socket }) => {
     cancel(io, socket, socket.character_id)
 }
 
@@ -61,55 +51,41 @@ const cancel = async (io, socket, sender) => {
     invites.rows.forEach(i => pullMailBox(io, i.receiver_id))
 }
 
-const onReply = (event) => {
-    const { io, socket, content } = event
-
+const onReply = ({ io, socket, content }) => {
     reply(io, socket, content.sender, socket.character_id, content.answer)
 }
 
 const reply = async (io, socket, sender, receiver, answer) => {
-    // answer = true / false
-
     console.log(`[socket] Réponse à l'invitation de ${sender} à ${receiver} : ${answer}`)
 
-    // Mettre à jour le statut à 1 (acceptée) pour l'invitation où sender = senderValue
     await db.query('UPDATE invites SET status = $1 WHERE sender_id = $2 AND receiver_id = $3;', [answer ? 1 : 2, sender, receiver])
 
-    // On met à jour la boîte de réception du personnage qui a recu l'invitation
     await pullMailBox(io, socket.character_id)
-
     pullCharacters(io.to(sender), sender)
 }
 
-const onPullCharacters = (event) => {
-    const { socket } = event
-
+const onPullCharacters = ({ socket }) => {
     pullCharacters(socket, socket.character_id)
 }
 
 const pullCharacters = async (socket, sender) => {
     try {
         const r = await db.query('SELECT characters.name name, status FROM invites JOIN characters ON receiver_id = characters.id WHERE sender_id = $1;', [sender])
-
         socket.emit('invite_pull_characters', { members_list: r.rows })
     } catch (error) {
         console.log(error.message)
     }
 }
 
-module.exports = {
+export default {
     onAddCharacter,
     addCharacter,
-
     onRemoveCharacter,
     removeCharacter,
-
     onReply,
     reply,
-
     onCancel,
     cancel,
-
     onPullCharacters,
     pullCharacters
 }

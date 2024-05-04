@@ -1,7 +1,7 @@
-const auth = require('../../auth')
-const events = require('./events').events
-const socketIO = require('socket.io')
-const db = require('../../database')
+import auth from '../../auth.js'
+import { events } from './events.js'
+import { Server } from 'socket.io' 
+import db from '../../database/index.js'
 
 let connections = {}
 let io = null
@@ -55,7 +55,7 @@ const authSocketMiddleware = (socket, next) => {
 }
 
 const listen = (server, allowedOrigin, callback) => {
-    io = socketIO(server, {
+    io = new Server(server, {
         cors: {
           origin: allowedOrigin,
           methods: ["GET", "POST"],
@@ -80,8 +80,7 @@ const listen = (server, allowedOrigin, callback) => {
     })
 }
 
-
-module.exports = {
+export default {
     listen,
     destroySession
 }

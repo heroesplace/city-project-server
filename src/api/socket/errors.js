@@ -40,9 +40,8 @@ class InviteError extends DisplayableError {
     ]
 }
 
-module.exports = {
+export {
     DisplayableError,
-
     VillageError,
     InviteError,
     CharacterError
