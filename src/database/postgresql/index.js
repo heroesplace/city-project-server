@@ -23,7 +23,7 @@ const getErrorType = (code) => {
     case '42601':
       return new RequestSyntaxError()
     default:
-      return new Error("Unknown error")
+      return new Error('Unknown error')
   }
 }
 
