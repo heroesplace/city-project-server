@@ -2,7 +2,7 @@ import { createClient } from 'redis'
 
 const client = createClient({
   socket: {
-    host: '192.168.1.90',
+    host: process.env.REDIS_HOST || 'localhost',
     port: 6379
   }
 })
