@@ -1,5 +1,4 @@
 node_modules
-keys
-public
+private
 .env
 config

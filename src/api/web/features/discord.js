@@ -1,5 +1,7 @@
 import { request } from 'undici'
-import config from '../../../../config/config.json' assert { type: "json" }
+import fs from 'fs'
+
+const config = JSON.parse(fs.readFileSync('./private/config.json', 'utf8'))
 
 const exchangeCode = async (code) => {
   console.log(`The access code is: ${code}`)
@@ -13,22 +15,22 @@ const exchangeCode = async (code) => {
         code,
         grant_type: 'authorization_code',
         redirect_uri: 'http://localhost:3000/api/discord',
-          scope: 'identify',
-        }).toString(),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
+        scope: 'identify'
+      }).toString(),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
 
-      const oauthData = await tokenResponseData.body.json()
-      return oauthData
+    const oauthData = await tokenResponseData.body.json()
+    return oauthData
   } catch (error) {
-      // NOTE: An unauthorized token will not throw an error
-      // tokenResponseData.statusCode will be 401
-      console.error(error)
+    // NOTE: An unauthorized token will not throw an error
+    // tokenResponseData.statusCode will be 401
+    console.error(error)
   }
 }
 
 export {
-    exchangeCode
+  exchangeCode
 }
