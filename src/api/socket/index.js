@@ -29,12 +29,13 @@ const destroyPreviousSession = (io, socket) => {
 }
 
 const authSocketMiddleware = (socket, next) => {
-  const token = socket.handshake.query?.token
+  const header = socket.handshake.headers.authorization
 
-  if (!token) {
-    console.log('[socket] No token provided.')
-    return
-  }
+  if (!header) return next(new Error('no token'))
+
+  if (!header.startsWith('Bearer ')) return next(new Error('invalid token'))
+
+  const token = header.substring(7)
 
   auth.verifyTokenAuthenticity(token).then(async (decoded) => {
     const r = await db.query('SELECT accounts.id account_id, accounts.name account_name, characters.id character_id, characters.name character_name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.id = $1', [decoded.accountId])

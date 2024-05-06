@@ -35,12 +35,10 @@ router.post('/account/login', (req, res) => {
   const { accountName, password } = req.body
 
   account.login(accountName, password).then((token) => {
-    res.status(200)
-
-    res.json({ message: 'SUCCESSFULLY_LOGGED_IN', jwt: token })
+    res.json({ message: 'SUCCESSFULLY_LOGGED_IN', token })
   }).catch((e) => {
     res.status(400)
-    // NOTE: This is a security issue, we should not return the error message to the client
+
     res.json({ message: e.message })
   })
 })
