@@ -7,14 +7,12 @@ dotenv.config()
 const { Pool } = pg
 const pool = new Pool()
 
-pool.connect()
-  .then(() => {
-    console.log('[database] Connecté à la base de données')
-  })
-  .catch(err => {
-    console.error('[database]', err)
-    process.exit(-1)
-  })
+pool.connect().then(() => {
+  console.log('[database] Successfully connected to PostgreSQL database')
+}).catch(err => {
+  console.error('[database]', err)
+  process.exit(-1)
+})
 
 const getErrorType = (code) => {
   switch (code) {

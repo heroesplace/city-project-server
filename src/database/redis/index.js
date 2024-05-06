@@ -7,9 +7,12 @@ const client = createClient({
   }
 })
 
-client.on('error', (err) => console.log('Redis Client Error', err))
-
-await client.connect()
+await client.connect().then(() => {
+  console.log('[database] Successfully connected to Redis database')
+}).catch(err => {
+  console.error('[database]', err)
+  process.exit(-1)
+})
 
 const getClient = () => client
 
