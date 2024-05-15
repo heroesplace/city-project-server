@@ -15,7 +15,7 @@
 
 ## Introduction
 
-**City Project [Server]** is the backend part of the [City Project](https://github.com/devsoleo/city-project) open-source video game. City Project is a hybrid between an MMORPG and a strategy game, where players join the world, develop their characters, create villages, and conquer territories in a fully player-shaped universe.
+**City Project [Server]** is the backend part of the [City Project](https://github.com/heroes-place/city-project) open-source video game. City Project is a hybrid between an MMORPG and a strategy game, where players join the world, develop their characters, create villages, and conquer territories in a fully player-shaped universe.
 
 ## Technologies
 

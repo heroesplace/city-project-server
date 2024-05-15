@@ -1,70 +1,93 @@
-/*
-const onPlayerMove = async ({ socket, content }) => {
-    playerMove(socket, content.direction)
-}
+import fs from 'fs'
 
-const playerMove = async (socket, direction) => {
-    console.log('direction = ', direction)
+const map = JSON.parse(fs.readFileSync('./private/largemap.json', 'utf8')).layers[0].data
 
-    let data = []
+// FACTORISER CETTE FONCTION
+const getMapPart = (x, y, direction) => {
+  x = parseInt(x)
+  y = parseInt(y)
 
-    if (direction === 'right' || direction === 'left') {
-        // console.log(coords.x)
+  const border = 1000
+  const frame = { width: 32, height: 18 }
 
-        // await client.hIncrBy('coords:characters:1', 'x', (direction === 'right') ? 1 : -1)
+  const coordsIndex = parseInt(y * border + x)
+  const indexes = []
 
-        data = [
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-            [128],
-        ]
+  switch (direction) {
+    case "left": {
+      const f = 0 - (frame.width / 2)
+      const topCorner = coordsIndex + f - (frame.height / 2) * border
+
+      for (let i = 0; i < frame.height; i++) {
+        indexes.push(topCorner + (i * border))
+      }
+
+      break
     }
 
-    if (direction === 'up' || direction === 'down') {
-        // await client.hIncrBy('coords:characters:1', 'y', (direction === 'down') ? 1 : -1)
+    case "right": {
+      const f = (frame.width / 2) - 1
+      const topCorner = coordsIndex + f - (frame.height / 2) * border
 
-        data = [Array(32).fill(126)]
+      for (let i = 0; i < frame.height; i++) {
+          indexes.push(topCorner + (i * border))
+      }
+
+      break
     }
 
+    case "up": {
+      const f = 0 - (frame.width / 2)
+      const topCorner = coordsIndex + f - (frame.height / 2) * border
+
+      for (let i = 0; i < frame.width; i++) {
+        indexes.push(topCorner + i)
+      }
+
+      break
+    }
+
+    case "down": {
+      const f = 0 - (frame.width / 2) 
+      const bottomCorner = coordsIndex + f + ((frame.height / 2) - 1) * border
+
+      for (let i = 0; i < frame.width; i++) {
+        indexes.push(bottomCorner + i)
+      }
+
+      break
+    }
+  }
+
+  return indexes.map((index) => map[index])
 }
-*/
 
-const getMapFrame = (socket) => {
-  const temp = [[126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 149],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 149, 196],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 149, 196, 174],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 173, 174, 174],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 173, 174, 174],
-    [126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 173, 174, 174],
-    [126, 126, 149, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 126, 150, 150, 150, 150, 150, 151, 126, 126, 126, 126, 173, 174, 174],
-    [126, 126, 173, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 175, 126, 126, 126, 126, 197, 172, 174],
-    [126, 126, 173, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 175, 126, 126, 126, 126, 126, 197, 172],
-    [126, 126, 173, 174, 174, 171, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 198, 199, 126, 126, 126, 126, 126, 126, 197],
-    [126, 126, 173, 174, 174, 175, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 173, 174, 174, 175, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 173, 174, 174, 175, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 173, 174, 174, 175, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126],
-    [126, 126, 173, 174, 174, 195, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150]]
+const getMapFrame = (x, y) => {
+  const border = 1000
 
-  return temp
+  const frame = { width: 32, height: 18 }
+
+  const frameStartX = Math.max(0, x - Math.floor(frame.width / 2))
+  const frameStartY = Math.max(0, y - Math.floor(frame.height / 2))
+
+  const maxStartX = Math.max(0, border - frame.width)
+  const maxStartY = Math.max(0, border - frame.height)
+
+  const startX = Math.min(frameStartX, maxStartX)
+  const startY = Math.min(frameStartY, maxStartY)
+
+  let path = []
+  for (let row = 0; row < frame.height; row++) {
+    // Convertis la coordonée en index de la liste
+    const rowStartIndex = (startY + row) * border + startX
+
+    const line = Array.from({ length: frame.width }, (_, index) => (rowStartIndex + index))
+    path = path.concat(line)
+  }
+
+  const mapFrame = path.map((index) => map[index])
+
+  return mapFrame
 }
 
-export { getMapFrame }
+export { getMapFrame, getMapPart }
