@@ -71,7 +71,7 @@ const onPullCharacters = ({ socket }) => {
 const pullCharacters = async (socket, sender) => {
   try {
     const r = await db.query('SELECT characters.name name, status FROM invites JOIN characters ON receiver_id = characters.id WHERE sender_id = $1', [sender])
-    socket.emit('invite_pull_characters', { members_list: r.rows })
+    socket.emit('invite_pull_characters', { characters: r.rows })
   } catch (error) {
     console.log(error.message)
   }
