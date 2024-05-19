@@ -1,7 +1,7 @@
 import { request } from 'undici'
 import fs from 'fs'
 
-const config = JSON.parse(fs.readFileSync('./private/config.json', 'utf8'))
+const config = JSON.parse(fs.readFileSync('./private/discord/config.json', 'utf8'))
 
 const exchangeCode = async (code) => {
   console.log(`The access code is: ${code}`)

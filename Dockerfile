@@ -1,11 +1,15 @@
-FROM node:lts-slim
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
 COPY . .
 
+RUN apk add --no-cache openssl
 RUN npm install --quiet --production
 
-EXPOSE 3000
+EXPOSE 3000 
 
-CMD [ "npm", "start" ]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
