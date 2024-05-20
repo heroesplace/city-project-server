@@ -6,13 +6,8 @@ import db from '../../database/postgresql/index.js'
 const sessions = {}
 let io = null
 
-const destroySession = (characterId) => {
-  io.sockets.sockets.forEach((s) => {
-    if (sessions[characterId] === s.id) {
-      console.log('[socket] Déconnexion de la session précédente.')
-      s.disconnect()
-    }
-  })
+const getSessions = () => {
+  return sessions
 }
 
 const destroyPreviousSession = (io, socket) => {
@@ -79,10 +74,16 @@ const listen = (server, allowedOrigin, callback) => {
     for (const [event, handler] of Object.entries(events)) {
       socket.on(event, (content) => handler({ io, socket, content }))
     }
+
+    socket.conn.on("close", (reason) => {
+      // Character dispawn
+    })
   })
+
 }
 
-export default {
-  listen,
-  destroySession
+export default { listen }
+export {
+  io,
+  getSessions
 }

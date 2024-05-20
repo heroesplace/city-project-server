@@ -1,4 +1,4 @@
-import { onPushMessage } from './features/chat.js'
+import { onPushChat } from './features/chat.js'
 import { onPullMailbox } from '../socket/features/mailbox.js'
 import { onCreateVillage } from '../socket/features/village.js'
 import { onIsVillager, onCharacterSpawn, onCharacterMove } from '../socket/features/character.js'
@@ -6,7 +6,7 @@ import { onIsVillager, onCharacterSpawn, onCharacterMove } from '../socket/featu
 import invite from '../socket/features/invites.js'
 
 const events = {
-  push_chat_message: onPushMessage,
+  push_chat_message: onPushChat,
 
   invite_add_character: invite.charts.onAddCharacter,
   invite_remove_character: invite.charts.onRemoveCharacter,

@@ -32,7 +32,6 @@ const query = async (text, params, callback) => {
 }
 
 const queryTransaction = async (client, text, params, callback) => {
-  console.log('queryTransaction')
   return await client.query(text, params, callback).catch(e => {
     throw getErrorType(e.code)
   })

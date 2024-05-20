@@ -1,25 +1,29 @@
 import db from '../../../database/postgresql/index.js'
+import { pushMessage } from './chat/message.js'
+import { processCommand } from './chat/command.js'
 
-const onPushMessage = ({ io, socket, content }) => {
-  pushMessage(io, content, socket.characterId)
+const pushChat = async (socket, author, message, channel) => {
+  if (message === '' || message.length > 500) return
+
+  // TODO: Check if channel exists and is authorized
+  if (message.startsWith('/')) {
+    processCommand(socket, author, message, channel)
+  } else {
+    pushMessage(socket, author, message, channel)
+  }
 }
 
-const pushMessage = async (io, content, author) => {
-  if (content === '' || content.length > 500) return
-
-  console.log(`[socket] Message envoyé par ${author} : ${content}`)
-
-  await db.query('INSERT INTO messages (content, author) VALUES ($1, $2)', [content, author])
-
-  pullMessage(io, 'global')
+const onPushChat = ({ socket, content }) => {
+  pushChat(socket, socket.characterId, content.message, content.channel)
 }
 
-const pullMessage = async (socket, channel) => {
-  const request = await db.query('SELECT content, characters.name author FROM messages JOIN characters ON author = characters.id ORDER BY messages.id DESC LIMIT 1')
+const pullChat = async (socket, channel) => {
+  console.log(`[socket] Récupération du dernier message du channel ${channel}`)
+  const request = await db.query('SELECT content, characters.name author FROM messages JOIN characters ON author = characters.id WHERE channel = $1 ORDER BY messages.id DESC LIMIT 1', [channel])
 
   const message = request.rows[0]
 
-  socket.emit('update_chat', { content: message.content, author: message.author })
+  socket.emit('update_chat_message', { content: message.content, author: message.author })
 }
 
-export { onPushMessage, pushMessage }
+export { onPushChat, pullChat }

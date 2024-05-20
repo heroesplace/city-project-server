@@ -1,6 +1,7 @@
 import db from '../../../../database/postgresql/index.js'
 import { pullMailBox } from '../mailbox.js'
 import { CharacterError, InviteError } from '../../errors.js'
+import { getSessions } from '../../index.js'
 
 const onAddCharacter = async ({ io, socket, content }) => {
   try {
@@ -28,7 +29,7 @@ const addCharacter = async (io, socket, sender, receiver) => {
   await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiverId])
 
   await pullCharacters(socket, sender)
-  await pullMailBox(io.to(receiverId), receiverId)
+  await pullMailBox(io.sockets.sockets.get(getSessions()[receiverId]), receiverId)
 }
 
 const onRemoveCharacter = ({ io, socket, content }) => {
@@ -61,7 +62,8 @@ const reply = async (io, socket, sender, receiver, answer) => {
   await db.query('UPDATE invites SET status = $1 WHERE sender_id = $2 AND receiver_id = $3', [answer ? 1 : 2, sender, receiver])
 
   await pullMailBox(io, socket.characterId)
-  pullCharacters(io.to(sender), sender)
+
+  pullCharacters(io.sockets.sockets.get(getSessions()[sender]), sender)
 }
 
 const onPullCharacters = ({ socket }) => {
