@@ -1,3 +1,4 @@
+import { onJoinChannel, onPullChannelsList } from './features/chat/channels.js'
 import { onPushChat } from './features/chat.js'
 import { onPullMailbox } from '../socket/features/mailbox.js'
 import { onCreateVillage } from '../socket/features/village.js'
@@ -7,6 +8,8 @@ import invite from '../socket/features/invites.js'
 
 const events = {
   push_chat_message: onPushChat,
+  pull_channels_list: onPullChannelsList,
+  join_chat_channel: onJoinChannel,
 
   invite_add_character: invite.charts.onAddCharacter,
   invite_remove_character: invite.charts.onRemoveCharacter,
