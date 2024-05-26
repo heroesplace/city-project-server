@@ -14,8 +14,15 @@ class RequestSyntaxError extends DatabaseError {
     }
 }
 
+class UndefinedTableError extends DatabaseError {
+    constructor() {
+        super('42P01')
+    }
+}
+
 export {
     DatabaseError,
     UniqueConstraintError,
-    RequestSyntaxError
+    RequestSyntaxError,
+    UndefinedTableError
 }

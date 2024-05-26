@@ -1,6 +1,11 @@
 import pg from 'pg'
-import { UniqueConstraintError, RequestSyntaxError } from './errors.js'
 import dotenv from 'dotenv'
+
+import {
+  UniqueConstraintError,
+  RequestSyntaxError,
+  UndefinedTableError
+} from './errors.js'
 
 dotenv.config()
 
@@ -14,14 +19,17 @@ pool.connect().then(() => {
   process.exit(-1)
 })
 
+// TODO : rewrite this function to user super() argument from Error class
 const getErrorType = (code) => {
   switch (code) {
     case '23505':
       return new UniqueConstraintError()
     case '42601':
       return new RequestSyntaxError()
+    case '42P01':
+      return new UndefinedTableError()
     default:
-      return new Error('Unknown error')
+      return new Error(code)
   }
 }
 
