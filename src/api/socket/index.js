@@ -3,87 +3,92 @@ import { events } from './events.js'
 import { Server } from 'socket.io'
 import db from '../../database/postgresql/index.js'
 
-const sessions = {}
-let io = null
+class SocketManager {
+  constructor() {
+    this.sessions = {}
+    this.io = null
+  }
 
-const getSessions = () => {
-  return sessions
-}
+  getSessions() {
+    return this.sessions
+  }
 
-const destroyPreviousSession = (io, socket) => {
-  io.sockets.sockets.forEach((s) => {
-    if (sessions[socket.characterId] === s.id) {
-      console.log('[socket] Déconnexion de la session précédente.')
-      s.disconnect()
-    }
-  })
-
-  sessions[socket.characterId] = socket.id
-
-  console.log('[socket] Sessions : ', sessions)
-}
-
-const authSocketMiddleware = (socket, next) => {
-  const header = socket.handshake.headers.authorization
-
-  if (!header) return next(new Error('no token'))
-
-  if (!header.startsWith('Bearer ')) return next(new Error('invalid token'))
-
-  const token = header.substring(7)
-
-  auth.verifyTokenAuthenticity(token).then(async (decoded) => {
-    const r = await db.query('SELECT accounts.id account_id, accounts.name account_name, characters.id character_id, characters.name character_name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.id = $1', [decoded.accountId])
-
-    const infos = r.rows[0]
-
-    socket.accountId = infos.account_id
-    socket.accountName = infos.account_name
-
-    socket.characterId = infos.character_id
-    socket.characterName = infos.character_name
-
-    socket.join(socket.characterId)
-
-    next()
-  }).catch(err => {
-    return next(err)
-  })
-}
-
-const listen = (server, allowedOrigin, callback) => {
-  io = new Server(server, {
-    cors: {
-      origin: allowedOrigin,
-      methods: ['GET', 'POST'],
-      credentials: true
-    }
-  })
-
-  io.disconnectSockets()
-
-  callback()
-
-  io.use((socket, next) => authSocketMiddleware(socket, next))
-
-  io.on('connection', (socket) => {
-    console.log('[socket] Nouvelle connexion établie.')
-
-    destroyPreviousSession(io, socket)
-
-    for (const [event, handler] of Object.entries(events)) {
-      socket.on(event, (content) => handler({ io, socket, content }))
-    }
-
-    socket.conn.on("close", (reason) => {
-      // Character dispawn
+  destroyPreviousSession(socket) {
+    this.io.sockets.sockets.forEach((s) => {
+      if (this.sessions[socket.characterId] === s.id) {
+        console.log('[socket] Déconnexion de la session précédente.')
+        s.disconnect()
+      }
     })
-  })
 
+    this.sessions[socket.characterId] = socket.id
+
+    console.log('[socket] Sessions : ', this.sessions)
+  }
+
+  async authSocketMiddleware(socket, next) {
+    const header = socket.handshake.headers.authorization
+
+    if (!header) return next(new Error('no token'))
+
+    if (!header.startsWith('Bearer ')) return next(new Error('invalid token'))
+
+    const token = header.substring(7)
+
+    try {
+      const decoded = await auth.verifyTokenAuthenticity(token)
+      const r = await db.query('SELECT accounts.id account_id, accounts.name account_name, characters.id character_id, characters.name character_name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.id = $1', [decoded.accountId])
+
+      const infos = r.rows[0]
+
+      socket.accountId = infos.account_id
+      socket.accountName = infos.account_name
+      socket.characterId = infos.character_id
+      socket.characterName = infos.character_name
+
+      socket.join(socket.characterId)
+
+      next()
+    } catch (err) {
+      return next(err)
+    }
+  }
+
+  listen(server, allowedOrigin, callback) {
+    this.io = new Server(server, {
+      cors: {
+        origin: allowedOrigin,
+        methods: ['GET', 'POST'],
+        credentials: true
+      }
+    })
+
+    this.io.disconnectSockets()
+
+    callback()
+
+    this.io.use((socket, next) => this.authSocketMiddleware(socket, next))
+
+    this.io.on('connection', (socket) => {
+      console.log('[socket] Nouvelle connexion établie.')
+
+      this.destroyPreviousSession(socket)
+
+      for (const [event, handler] of Object.entries(events)) {
+        socket.on(event, (content) => handler({ io: this.io, socket, content }))
+      }
+
+      socket.conn.on("close", (reason) => {
+        // Character dispawn
+      })
+    })
+  }
 }
 
-export default { listen }
-export {
+const socketManager = new SocketManager()
+
+export default socketManager
+export const {
   io,
   getSessions
-}
+} = socketManager
