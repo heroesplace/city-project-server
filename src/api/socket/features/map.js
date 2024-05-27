@@ -1,8 +1,10 @@
 import fs from 'fs'
 
-const map = JSON.parse(fs.readFileSync('./private/map/new_map.json', 'utf8')).layers[0].data
+const map = JSON.parse(fs.readFileSync('./private/map/slices.json', 'utf8'))
 
-const getMapPart = (x, y, direction) => {
+const getBorder = (layerId, x, y, direction) => {
+  const layer = getLayer(layerId)
+
   x = parseInt(x)
   y = parseInt(y)
 
@@ -44,16 +46,21 @@ const getMapPart = (x, y, direction) => {
   }
 
   return columns.map(([y, x]) => {
-    return (y >= 0 && x >= 0 && y < 100 && x < 100) ? map[y][x] : -1
+    return (y >= 0 && x >= 0 && y < 100 && x < 100) ? layer[y][x] : -1
   })
 }
 
-const getMapFrame = (x, y) => {
+const getLayer = (layerId) => {
+  return map.layers[layerId].data
+}
+
+const getFrame = (layerId, x, y) => {
+  const layer = getLayer(layerId)
   const frame = { width: 32, height: 18 }
   const indexes = []
 
   const frameStart = {
-      x: x - Math.floor(frame.width / 2) + 1, 
+      x: x - Math.floor(frame.width / 2) + 1,
       y: y - Math.floor(frame.height / 2) + 1
   }
 
@@ -64,11 +71,11 @@ const getMapFrame = (x, y) => {
 
   for (let i = frameStart.y; i <= frameEnd.y; i++) {
     for (let j = frameStart.x; j <= frameEnd.x; j++) {
-      indexes.push((i >= 0 && j >= 0 && j < 100 && x < 100) ? map[i][j] : -1)
+      indexes.push((i >= 0 && j >= 0 && j < 100 && x < 100) ? layer[i][j] : -1)
     }
   }
 
   return indexes
 }
 
-export { getMapFrame, getMapPart }
+export { getFrame, getBorder }

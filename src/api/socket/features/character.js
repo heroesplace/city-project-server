@@ -1,7 +1,7 @@
 import db from '../../../database/postgresql/index.js'
 import { getClient } from '../../../database/redis/index.js'
 
-import { getMapFrame, getMapPart } from './map.js'
+import { getFrame, getBorder } from './map.js'
 
 const onIsVillager = async ({ socket }) => {
   const result = await isVillager(socket.characterId)
@@ -19,9 +19,17 @@ const onCharacterSpawn = async ({ socket }) => {
 
   const coords = await client.hGetAll(`coords:characters:${socket.characterId}`)
 
-  const mapFrame = getMapFrame(coords.x, coords.y)
+  const bottomLayerFrame = getFrame(0, coords.x, coords.y)
+  const worldLayerFrame = getFrame(1, coords.x, coords.y)
+  const aboveLayerFrame = getFrame(2, coords.x, coords.y)
 
-  socket.emit('character_spawn', { map_frame: mapFrame })
+  socket.emit('character_spawn', {
+    layers: [
+      bottomLayerFrame,
+      worldLayerFrame,
+      aboveLayerFrame
+    ]
+  })
 }
 
 const onCharacterMove = async ({ socket, content }) => {
@@ -31,12 +39,20 @@ const onCharacterMove = async ({ socket, content }) => {
 
   const coords = await client.hGetAll(`coords:characters:${socket.characterId}`)
 
-  const mapPart = getMapPart(coords.x, coords.y, content.direction)
+  const bottomLayerBorder = getBorder(0, coords.x, coords.y, content.direction)
+  const worldLayerBorder = getBorder(1, coords.x, coords.y, content.direction)
+  const aboveLayerBorder = getBorder(2, coords.x, coords.y, content.direction)
 
-  socket.emit('character_move', { direction: content.direction, map_part: mapPart })
+  socket.emit('character_move', {
+    direction: content.direction,
+    layers: [
+      bottomLayerBorder,
+      worldLayerBorder,
+      aboveLayerBorder
+    ]
+  })
 }
 
-// Movements
 const moveCharacter = async (characterId, direction) => {
   const client = getClient()
   const path = `coords:characters:${characterId}`
