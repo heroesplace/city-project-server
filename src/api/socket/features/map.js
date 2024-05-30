@@ -1,6 +1,12 @@
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const map = JSON.parse(fs.readFileSync('./private/map/slices.json', 'utf8'))
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const mapPath = path.resolve(__dirname, '../../../../private/map/slices.json')
+const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'))
 
 const getBorder = (layerId, x, y, direction) => {
   const layer = getLayer(layerId)

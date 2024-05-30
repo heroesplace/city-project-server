@@ -1,8 +1,8 @@
-import { onPullMailbox } from '../socket/features/mailbox.js'
-import { onCreateVillage } from '../socket/features/village.js'
-import { onIsVillager, onCharacterSpawn, onCharacterMove } from '../socket/features/character.js'
+import { onPullMailbox } from './features/mailbox.js'
+import { onCreateVillage } from './features/village.js'
+import { onIsVillager, onCharacterSpawn, onCharacterMove } from './features/character.js'
 
-import invite from '../socket/features/invites.js'
+import invite from './features/invites.js'
 
 const events = {
   invite_add_character: invite.charts.onAddCharacter,
