@@ -1,16 +1,19 @@
-import { createClient } from 'redis'
+import { Redis } from 'ioredis'
+import dotenv from 'dotenv'
 
-const client = createClient({
-  socket: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: 6379
-  }
+dotenv.config()
+
+const client = new Redis({
+  host: process.env.REDIS_HOST || '127.0.0.1',
+  port: 6379
 })
 
-await client.connect().then(() => {
-  console.log('[database] Successfully connected to Redis database')
-}).catch(err => {
-  console.error('[database]', err)
+client.on('connect', () => {
+  console.log('[db-redis] Successfully connected to Redis database')
+})
+
+client.on('error', (err) => {
+  console.error('[db-redis]', err)
   process.exit(-1)
 })
 

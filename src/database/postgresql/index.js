@@ -13,9 +13,9 @@ const { Pool } = pg
 const pool = new Pool()
 
 pool.connect().then(() => {
-  console.log('[database] Successfully connected to PostgreSQL database')
+  console.log('[db-postgres] Successfully connected to PostgreSQL database')
 }).catch(err => {
-  console.error('[database]', err)
+  console.error('[db-postgres]', err)
   process.exit(-1)
 })
 

@@ -1,7 +1,10 @@
-import auth from '../../auth.js'
-import { events } from './events.js'
 import { Server } from 'socket.io'
+import { createAdapter } from '@socket.io/redis-streams-adapter'
+
+import { getClient } from '../../database/redis/index.js'
+import { events } from './events.js'
 import db from '../../database/postgresql/index.js'
+import auth from '../../auth.js'
 
 class SocketManager {
   constructor() {
@@ -9,9 +12,7 @@ class SocketManager {
     this.io = null
   }
 
-  getSessions() {
-    return this.sessions
-  }
+  getSessions = () => this.sessions
 
   destroyPreviousSession(socket) {
     this.io.sockets.sockets.forEach((s) => {
@@ -55,7 +56,10 @@ class SocketManager {
   }
 
   listen(server, allowedOrigin, callback) {
+    const client = getClient()
+
     this.io = new Server(server, {
+      adapter: createAdapter(client),
       cors: {
         origin: allowedOrigin,
         methods: ['GET', 'POST'],

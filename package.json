@@ -10,13 +10,14 @@
     "lint": "standard --fix"
   },
   "dependencies": {
+    "@socket.io/redis-streams-adapter": "^0.2.2",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
+    "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.5",
-    "redis": "^4.6.13",
     "socket.io": "^4.6.1",
     "undici": "^6.15.0"
   },
