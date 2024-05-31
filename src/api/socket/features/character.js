@@ -17,7 +17,7 @@ const isVillager = async (characterId) => {
 const onCharacterSpawn = async ({ socket }) => {
   const client = getClient()
 
-  const coords = await client.hGetAll(`coords:characters:${socket.characterId}`)
+  const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
 
   const bottomLayerFrame = getFrame(0, coords.x, coords.y)
   const worldLayerFrame = getFrame(1, coords.x, coords.y)
@@ -37,7 +37,7 @@ const onCharacterMove = async ({ socket, content }) => {
 
   moveCharacter(socket.characterId, content.direction)
 
-  const coords = await client.hGetAll(`coords:characters:${socket.characterId}`)
+  const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
 
   const bottomLayerBorder = getBorder(0, coords.x, coords.y, content.direction)
   const worldLayerBorder = getBorder(1, coords.x, coords.y, content.direction)
@@ -57,14 +57,13 @@ const moveCharacter = async (characterId, direction) => {
   const client = getClient()
   const path = `coords:characters:${characterId}`
 
-  console.log(direction)
 
   if (direction === 'right' || direction === 'left') {
-    await client.hIncrBy(path, 'x', (direction === 'right') ? 1 : -1)
+    await client.hincrby(path, 'x', (direction === 'right') ? 1 : -1)
   }
 
   if (direction === 'up' || direction === 'down') {
-    await client.hIncrBy(path, 'y', (direction === 'down') ? 1 : -1)
+    await client.hincrby(path, 'y', (direction === 'down') ? 1 : -1)
   }
 }
 

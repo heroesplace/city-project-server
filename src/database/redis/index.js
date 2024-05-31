@@ -3,10 +3,12 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const client = new Redis({
+const options = {
   host: process.env.REDIS_HOST || '127.0.0.1',
   port: 6379
-})
+}
+
+const client = new Redis(options)
 
 client.on('connect', () => {
   console.log('[db-redis] Successfully connected to Redis database')
@@ -18,7 +20,9 @@ client.on('error', (err) => {
 })
 
 const getClient = () => client
+const getAdapterClient = () => new Redis(options)
 
 export {
-  getClient
+  getClient,
+  getAdapterClient
 }

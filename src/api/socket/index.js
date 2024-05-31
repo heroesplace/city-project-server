@@ -1,7 +1,7 @@
 import { Server } from 'socket.io'
 import { createAdapter } from '@socket.io/redis-streams-adapter'
 
-import { getClient } from '../../database/redis/index.js'
+import { getAdapterClient } from '../../database/redis/index.js'
 import { events } from './events.js'
 import db from '../../database/postgresql/index.js'
 import auth from '../../auth.js'
@@ -56,7 +56,7 @@ class SocketManager {
   }
 
   listen(server, allowedOrigin, callback) {
-    const client = getClient()
+    const client = getAdapterClient()
 
     this.io = new Server(server, {
       adapter: createAdapter(client),
