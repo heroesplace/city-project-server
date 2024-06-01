@@ -14,6 +14,10 @@ class SocketManager {
 
   getSessions = () => this.sessions
 
+  getOthersSessions = (socket) => {
+    return Object.keys(this.sessions).filter(key => key !== socket.characterId.toString())
+  }
+
   destroyPreviousSession(socket) {
     this.io.sockets.sockets.forEach((s) => {
       if (this.sessions[socket.characterId] === s.id) {
@@ -94,5 +98,6 @@ const socketManager = new SocketManager()
 export default socketManager
 export const {
   io,
-  getSessions
+  getSessions,
+  getOthersSessions
 } = socketManager

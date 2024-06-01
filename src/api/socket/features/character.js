@@ -1,7 +1,8 @@
 import db from '../../../database/postgresql/index.js'
 import { getClient } from '../../../database/redis/index.js'
+import { getOthersSessions } from '../index.js'
 
-import { getFrame, getBorder } from './map.js'
+import { getFrame, getBorder, foundOthers } from './map.js'
 
 const onIsVillager = async ({ socket }) => {
   const result = await isVillager(socket.characterId)
@@ -19,6 +20,8 @@ const onCharacterSpawn = async ({ socket }) => {
 
   const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
 
+  const others = await foundOthers(coords.x, coords.y, getOthersSessions(socket))
+
   const bottomLayerFrame = getFrame(0, coords.x, coords.y)
   const worldLayerFrame = getFrame(1, coords.x, coords.y)
   const aboveLayerFrame = getFrame(2, coords.x, coords.y)
@@ -28,7 +31,8 @@ const onCharacterSpawn = async ({ socket }) => {
       bottomLayerFrame,
       worldLayerFrame,
       aboveLayerFrame
-    ]
+    ],
+    others
   })
 }
 
@@ -38,6 +42,8 @@ const onCharacterMove = async ({ socket, content }) => {
   moveCharacter(socket.characterId, content.direction)
 
   const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
+
+  const others = await foundOthers(coords.x, coords.y, getOthersSessions(socket))
 
   const bottomLayerBorder = getBorder(0, coords.x, coords.y, content.direction)
   const worldLayerBorder = getBorder(1, coords.x, coords.y, content.direction)
@@ -49,7 +55,8 @@ const onCharacterMove = async ({ socket, content }) => {
       bottomLayerBorder,
       worldLayerBorder,
       aboveLayerBorder
-    ]
+    ],
+    others
   })
 }
 

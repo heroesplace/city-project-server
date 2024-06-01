@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { getClient } from '../../../database/redis/index.js'
+import { Quadtree, Rectangle, Player } from './map/Objects.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -84,4 +86,56 @@ const getFrame = (layerId, x, y) => {
   return indexes
 }
 
-export { getFrame, getBorder }
+const foundOthers = async (x, y, connectedCharacterIds = []) => {
+  const client = getClient()
+
+  const frame = { width: 32, height: 18 }
+
+  const boundary = new Rectangle(0, 0, 1000, 1000)
+  const quadtree = new Quadtree(boundary, 4)
+
+  const players = []
+
+  const player = new Player(x, y)
+
+  const searchArea = new Rectangle(
+      player.position.x - frame.width / 2 + 1,
+      player.position.y - frame.height / 2 + 1,
+      frame.width,
+      frame.height
+  )
+
+  try {
+    const results = await Promise.all(connectedCharacterIds.map(key => client.hgetall(`coords:characters:${key}`)))
+
+    results.forEach((result, index) => {
+      players.push(new Player(result.x, result.y))
+    })
+  } catch (err) {
+    console.error('Error fetching hashes:', err)
+  }
+
+  const foundPlayers = []
+
+  for (let player of players) {
+    quadtree.insert(player)
+  }
+
+  quadtree.query(searchArea, foundPlayers) // foundPlayers is now filled with players in the search area
+
+  foundPlayers.forEach(other => {
+    other.position = getRelative(player.position, other.position)
+  })
+
+  return foundPlayers
+}
+
+/* Calculate the relative position of a player compared to another */
+function getRelative(player, other) {
+    const frame = { width: 32, height: 18 }
+    const delta = { x: player.x - other.x, y: player.y - other.y }
+
+    return { x: (frame.width / 2 - 1) - delta.x, y: (frame.height / 2 - 1) - delta.y }
+}
+
+export { getFrame, getBorder, foundOthers, getRelative }
