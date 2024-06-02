@@ -55,7 +55,7 @@ class Quadtree {
   }
 
   insert(player) {
-      if (!this.boundary.contains(player.position)) {
+      if (!this.boundary.contains(player.coords)) {
           return false;
       }
 
@@ -79,7 +79,7 @@ class Quadtree {
           return;
       }
       for (let player of this.players) {
-          if (range.contains(player.position)) {
+          if (range.contains(player.coords)) {
               found.push(player);
           }
       }
@@ -93,8 +93,9 @@ class Quadtree {
 }
 
 class Player {
-  constructor(x, y) {
-      this.position = new Point(x, y);
+  constructor(x, y, characterId = -1) {
+      this.coords = new Point(x, y)
+      this.characterId = characterId
   }
 }
 

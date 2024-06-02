@@ -99,17 +99,22 @@ const foundOthers = async (x, y, connectedCharacterIds = []) => {
   const player = new Player(x, y)
 
   const searchArea = new Rectangle(
-      player.position.x - frame.width / 2 + 1,
-      player.position.y - frame.height / 2 + 1,
-      frame.width,
-      frame.height
+    player.coords.x - frame.width / 2 + 1,
+    player.coords.y - frame.height / 2 + 1,
+    frame.width,
+    frame.height
   )
 
   try {
-    const results = await Promise.all(connectedCharacterIds.map(key => client.hgetall(`coords:characters:${key}`)))
+    const results = await Promise.all(
+      connectedCharacterIds.map(async (key) => {
+        const coords = await client.hgetall(`coords:characters:${key}`)
+        return { characterId: key, coords }
+      })
+    )
 
     results.forEach((result, index) => {
-      players.push(new Player(result.x, result.y))
+      players.push(new Player(result.coords.x, result.coords.y, result.characterId))
     })
   } catch (err) {
     console.error('Error fetching hashes:', err)
@@ -124,7 +129,7 @@ const foundOthers = async (x, y, connectedCharacterIds = []) => {
   quadtree.query(searchArea, foundPlayers) // foundPlayers is now filled with players in the search area
 
   foundPlayers.forEach(other => {
-    other.position = getRelative(player.position, other.position)
+    other.coords = getRelative(player.coords, other.coords)
   })
 
   return foundPlayers
