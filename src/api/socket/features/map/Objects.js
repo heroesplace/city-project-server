@@ -1,10 +1,3 @@
-class Point {
-  constructor(x, y) {
-      this.x = x;
-      this.y = y;
-  }
-}
-
 class Rectangle {
   constructor(x, y, width, height) {
       this.x = x;
@@ -92,11 +85,4 @@ class Quadtree {
   }
 }
 
-class Player {
-  constructor(x, y, characterId = -1) {
-      this.coords = new Point(x, y)
-      this.characterId = characterId
-  }
-}
-
-export { Point, Rectangle, Quadtree, Player }
+export { Rectangle, Quadtree }
