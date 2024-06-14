@@ -63,6 +63,9 @@ const getLayer = (layerId) => {
 }
 
 const getFrame = (layerId, x, y) => {
+  x = Math.floor(x)
+  y = Math.floor(y)
+
   const layer = getLayer(layerId)
   const frame = { width: 32, height: 18 }
   const indexes = []
@@ -152,4 +155,4 @@ function getRelative(player, other) {
     return { x: (frame.width / 2 - 1) - delta.x, y: (frame.height / 2 - 1) - delta.y }
 }
 
-export { getFrame, getBorder, getRelative, foundOtherPlayers, getCharacterListCoords }
+export { getFrame, getBorder, getRelative, foundOtherPlayers, getCharacterListCoords, getLayer }

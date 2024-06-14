@@ -18,7 +18,14 @@ const isVillager = async (characterId) => {
 const onCharacterSpawn = async ({ socket }) => {
   const client = getClient()
 
-  const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
+  const r = await client.hgetall(`coords:characters:${socket.characterId}`)
+
+  const coords = {
+    x: parseFloat(r.x),
+    y: parseFloat(r.y)
+  }
+
+  console.log(coords)
 
   const othersCoords = await getCharacterListCoords(getOthersSessions(socket))
   const others = await foundOtherPlayers({ x: coords.x, y: coords.y }, othersCoords)
@@ -33,14 +40,16 @@ const onCharacterSpawn = async ({ socket }) => {
       worldLayerFrame,
       aboveLayerFrame
     ],
-    others
+    others,
+    precision: {
+      x: coords.x - Math.floor(coords.x),
+      y: coords.y - Math.floor(coords.y)
+    }
   })
 }
 
-const onCharacterMove = async ({ socket, content }) => {
+const onAskForMap = async ({ socket, content }) => {
   const client = getClient()
-
-  moveCharacter(socket.characterId, content.direction)
 
   const coords = await client.hgetall(`coords:characters:${socket.characterId}`)
 
@@ -62,18 +71,13 @@ const onCharacterMove = async ({ socket, content }) => {
   })
 }
 
-const moveCharacter = async (characterId, direction) => {
+const onCharacterMove = async ({ socket, content }) => {
   const client = getClient()
-  const path = `coords:characters:${characterId}`
 
+  const path = `coords:characters:${socket.characterId}`
 
-  if (direction === 'right' || direction === 'left') {
-    await client.hincrby(path, 'x', (direction === 'right') ? 1 : -1)
-  }
-
-  if (direction === 'up' || direction === 'down') {
-    await client.hincrby(path, 'y', (direction === 'down') ? 1 : -1)
-  }
+  await client.hincrbyfloat(path, 'x', content.distance.x)
+  await client.hincrbyfloat(path, 'y', content.distance.y)
 }
 
 export {
