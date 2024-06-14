@@ -1,5 +1,5 @@
 #!/bin/sh
 
-openssl genrsa -out private.key 2048
+openssl genrsa -out ./private/private.key 2048
 
 npm start
