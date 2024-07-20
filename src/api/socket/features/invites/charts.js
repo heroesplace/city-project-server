@@ -7,7 +7,7 @@ const onAddCharacter = async ({ io, socket, content }) => {
   try {
     await addCharacter(io, socket, socket.characterId, content)
   } catch (error) {
-    error.display(socket)
+    console.log(error)
   }
 }
 

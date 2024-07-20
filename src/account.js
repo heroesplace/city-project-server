@@ -17,7 +17,7 @@ async function register (accountName, characterName, emailAddress, password) {
 
     const hashedPassword = await auth.hashPassword(password)
 
-    const res = await db.queryTransaction(client, 'INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id ', [accountName, emailAddress, hashedPassword])
+    const res = await db.queryTransaction(client, 'INSERT INTO accounts (name, email_address, password) VALUES ($1, $2, $3) RETURNING id', [accountName, emailAddress, hashedPassword])
 
     await db.queryTransaction(client, 'INSERT INTO characters (name, account_id) VALUES ($1, $2) RETURNING id', [characterName, res.rows[0].id])
 

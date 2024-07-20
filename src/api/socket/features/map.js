@@ -152,4 +152,4 @@ function getRelative(player, other) {
     return { x: (frame.width / 2 - 1) - delta.x, y: (frame.height / 2 - 1) - delta.y }
 }
 
-export { getFrame, getBorder, getRelative, foundOtherPlayers, getCharacterListCoords }
+export { getFrame, getBorder, getRelative, foundOtherPlayers, getCharacterListCoords, getLayer }

@@ -10,7 +10,7 @@ const onIsVillager = async ({ socket }) => {
 }
 
 const isVillager = async (characterId) => {
-  const r1 = await db.query('SELECT * FROM village_members WHERE character_id = $1', [characterId])
+  const r1 = await db.query('SELECT * FROM villages_members WHERE character_id = $1', [characterId])
 
   return r1.rows.length !== 0
 }
