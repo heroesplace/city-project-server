@@ -12,7 +12,11 @@ class SocketManager {
     this.io = null
   }
 
-  getSessions = () => this.sessions
+  getSessions = () => {
+    console.log("oui voila")
+    console.log(this.sessions)
+    return this.sessions
+  }
 
   getOthersSessions = (socket) => {
     return Object.keys(this.sessions).filter(key => key !== socket.characterId.toString())
@@ -51,7 +55,7 @@ class SocketManager {
       socket.characterId = infos.character_id
       socket.characterName = infos.character_name
 
-      socket.join(socket.characterId)
+      // socket.join(socket.characterId)
 
       next()
     } catch (err) {

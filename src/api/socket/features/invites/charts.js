@@ -29,6 +29,7 @@ const addCharacter = async (io, socket, sender, receiver) => {
   await db.query('INSERT INTO invites (sender_id, receiver_id) VALUES ($1, $2)', [sender, receiverId])
 
   await pullCharacters(socket, sender)
+  console.log(getSessions()[receiverId], receiverId)
   await pullMailBox(io.sockets.sockets.get(getSessions()[receiverId]), receiverId)
 }
 

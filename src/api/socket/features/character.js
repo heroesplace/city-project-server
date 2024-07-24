@@ -4,17 +4,6 @@ import { getOthersSessions } from '../index.js'
 
 import { getFrame, getBorder, foundOtherPlayers, getCharacterListCoords } from './map.js'
 
-const onIsVillager = async ({ socket }) => {
-  const result = await isVillager(socket.characterId)
-  socket.emit('character_is_villager', { is_villager: result })
-}
-
-const isVillager = async (characterId) => {
-  const r1 = await db.query('SELECT * FROM villages_members WHERE character_id = $1', [characterId])
-
-  return r1.rows.length !== 0
-}
-
 const onCharacterSpawn = async ({ socket }) => {
   const client = getClient()
 
@@ -66,7 +55,6 @@ const moveCharacter = async (characterId, direction) => {
   const client = getClient()
   const path = `coords:characters:${characterId}`
 
-
   if (direction === 'right' || direction === 'left') {
     await client.hincrby(path, 'x', (direction === 'right') ? 1 : -1)
   }
@@ -77,8 +65,6 @@ const moveCharacter = async (characterId, direction) => {
 }
 
 export {
-  onIsVillager,
-  isVillager,
   onCharacterSpawn,
   onCharacterMove
 }

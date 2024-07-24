@@ -1,6 +1,7 @@
 import { onPullMailbox } from './features/mailbox.js'
-import { onCreateVillage } from './features/village.js'
-import { onIsVillager, onCharacterSpawn, onCharacterMove } from './features/character.js'
+import { onCreateVillage, onIsVillager } from './features/village.js'
+import { onCharacterSpawn, onCharacterMove } from './features/character.js'
+import { onJoinChannel, onPushChatMessage } from './features/chat/channels.js'
 
 import invite from './features/invites.js'
 
@@ -18,7 +19,10 @@ const events = {
 
   character_is_villager: onIsVillager,
   character_spawn: onCharacterSpawn,
-  character_move: onCharacterMove
+  character_move: onCharacterMove,
+
+  join_chat_channel: onJoinChannel,
+  push_chat_message: onPushChatMessage
 }
 
 export { events }

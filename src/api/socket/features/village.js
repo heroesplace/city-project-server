@@ -1,5 +1,4 @@
 import db from '../../../database/postgresql/index.js'
-import { isVillager } from './character.js'
 
 import { UniqueConstraintError } from '../../../database/postgresql/errors.js'
 import { CharacterError, VillageError } from '../errors.js'
@@ -68,8 +67,21 @@ const deleteVillage = async (villageId) => {
   await db.query('DELETE FROM villages WHERE id = $1', [villageId])
 }
 
+const isVillager = async (characterId) => {
+  const r1 = await db.query('SELECT * FROM villages_members WHERE character_id = $1', [characterId])
+
+  return r1.rows.length !== 0
+}
+
+const onIsVillager = async ({ socket }) => {
+  const result = await isVillager(socket.characterId)
+  socket.emit('character_is_villager', { is_villager: result })
+}
+
 export {
   onCreateVillage,
   createVillage,
-  deleteVillage
+  deleteVillage,
+  onIsVillager,
+  isVillager
 }
