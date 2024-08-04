@@ -1,6 +1,5 @@
 node_modules
-private/*/*
-!private/*/.gitkeep
+config/*/*
+!config/*/.gitkeep
 .env
-config
-private.key
+private

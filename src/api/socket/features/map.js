@@ -7,7 +7,7 @@ import { Quadtree, Rectangle } from './map/Objects.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const mapPath = path.resolve(__dirname, '../../../../private/map/slices.json')
+const mapPath = path.resolve(__dirname, '../../../../config/map/map.json')
 const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'))
 
 const getBorder = (layerId, x, y, direction) => {

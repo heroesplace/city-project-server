@@ -1,6 +1,6 @@
 import pg from 'pg'
+import runMigrations from 'node-pg-migrate'
 import dotenv from 'dotenv'
-
 import {
   UniqueConstraintError,
   RequestSyntaxError,
@@ -10,7 +10,9 @@ import {
 dotenv.config()
 
 const { Pool } = pg
-const pool = new Pool()
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+})
 
 pool.connect().then(() => {
   console.log('[db-postgres] Successfully connected to PostgreSQL database')
@@ -18,6 +20,18 @@ pool.connect().then(() => {
   console.error('[db-postgres]', err)
   process.exit(-1)
 })
+
+const migrateDatabase = async () => {
+  await runMigrations({
+    dir: './migrations',
+    databaseUrl: process.env.DATABASE_URL,
+    direction: 'up',
+    verbose: true,
+  }).catch(err => {
+    console.error('[db-postgres] Error migrating database:', err)
+    process.exit(-1)
+  })
+}
 
 // TODO : rewrite this function to user super() argument from Error class
 const getErrorType = (code) => {
@@ -50,5 +64,6 @@ const getClient = () => pool.connect()
 export default {
   query,
   queryTransaction,
-  getClient
+  getClient,
+  migrateDatabase
 }

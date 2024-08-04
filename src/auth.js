@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import fs from 'fs'
 
-const SECRET_KEY = fs.readFileSync('./private/private.key', 'utf8')
+const SECRET_KEY = fs.readFileSync(process.env.PRIVATE_KEY_FILE, 'utf8').trim()
 
 // Fonction pour générer un token JWT
 const generateToken = (payload) => {

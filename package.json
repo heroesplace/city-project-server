@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "standard",
-    "lint": "standard --fix"
+    "lint": "standard --fix",
+    "migrate": "node-pg-migrate"
   },
   "dependencies": {
     "@socket.io/redis-streams-adapter": "^0.2.2",
@@ -18,8 +19,9 @@
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.5",
-    "socket.io": "^4.6.1",
-    "undici": "^6.15.0"
+    "socket.io": ">=4.6.2",
+    "undici": ">=6.19.2",
+    "node-pg-migrate": "^7.6.0"
   },
   "author": "",
   "license": "ISC",

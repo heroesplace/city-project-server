@@ -4,11 +4,14 @@ import bodyParser from 'body-parser'
 import socket from './src/api/socket/index.js'
 import dotenv from 'dotenv'
 import apiRouter from './src/api/web/index.js'
+import postgresql from './src/database/postgresql/index.js'
 
 dotenv.config()
 
 const app = express()
 const server = http.createServer(app)
+
+await postgresql.migrateDatabase()
 
 const allowedOrigin = `${process.env.NODE_ENV === 'production' ? 'https' : 'http'}://${process.env.CLIENT_ADDRESS}`
 
