@@ -20,9 +20,16 @@ class UndefinedTableError extends DatabaseError {
     }
 }
 
+class ForeignKeyError extends DatabaseError {
+    constructor() {
+        super('23503')
+    }
+}
+
 export {
     DatabaseError,
     UniqueConstraintError,
     RequestSyntaxError,
-    UndefinedTableError
+    UndefinedTableError,
+    ForeignKeyError
 }

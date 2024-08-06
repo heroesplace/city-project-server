@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import account from '../../account.js'
-import auth from '../../auth.js'
+import account from './features/account.js'
+import auth from '../auth.js'
 import { exchangeCode } from './features/discord.js'
 
 const router = Router()

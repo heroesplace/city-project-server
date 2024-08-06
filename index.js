@@ -1,9 +1,9 @@
 import http from 'http'
 import express from 'express'
 import bodyParser from 'body-parser'
-import socket from './src/api/socket/index.js'
+import socket from './src/socket/index.js'
 import dotenv from 'dotenv'
-import apiRouter from './src/api/web/index.js'
+import apiRouter from './src/web/index.js'
 import postgresql from './src/database/postgresql/index.js'
 
 dotenv.config()

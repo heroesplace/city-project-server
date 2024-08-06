@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { getClient } from '../../../database/redis/index.js'
-import { Quadtree, Rectangle } from './map/Objects.js'
+import { Quadtree, Rectangle } from './Objects.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

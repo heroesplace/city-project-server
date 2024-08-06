@@ -4,9 +4,7 @@ class DisplayableError extends Error {
   constructor (message) {
     super(message)
 
-    if (!this.isTypeCorrect(message)) {
-      this.message = 'Unknown error'
-    }
+    if (!this.isTypeCorrect(message)) this.message = 'Unknown error'
   }
 
   display (socket) {
@@ -22,27 +20,22 @@ class DisplayableError extends Error {
 class VillageError extends DisplayableError {
   static types = [
     'VILLAGE_NOT_FOUND',
-    'VILLAGE_NAME_TAKEN'
+    'VILLAGE_NAME_TAKEN',
+    'ALREADY_VILLAGER',
+    'EMPTY_CHART',
   ]
 }
 
 class CharacterError extends DisplayableError {
   static types = [
     'CHARACTER_NOT_FOUND',
-    'IS_VILLAGE_MEMBER'
-  ]
-}
-
-class InviteError extends DisplayableError {
-  static types = [
-    'SELF_INVITE',
-    'ALREADY_INVITED'
+    'IS_VILLAGE_MEMBER',
+    'EMPTY_CHARACTER_NAME'
   ]
 }
 
 export {
   DisplayableError,
   VillageError,
-  InviteError,
   CharacterError
 }
