@@ -38,20 +38,10 @@ CREATE TABLE charts (
     FOREIGN KEY (receiver_id) REFERENCES characters (id) ON DELETE CASCADE
 );
 
-CREATE TABLE channels_categories (
-	id SERIAL PRIMARY KEY NOT NULL,
-	name VARCHAR(255) NOT NULL,
-	is_persistent BOOLEAN DEFAULT FALSE,
-	min_members INTEGER DEFAULT 1,
-	max_members INTEGER,
-	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE channels (
     id SERIAL PRIMARY KEY NOT NULL,
     category INTEGER NOT NULL,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category) REFERENCES channels_categories (id)
 );
 
 CREATE TABLE channels_members (
@@ -103,12 +93,6 @@ CREATE TABLE channels_whisper  (
     FOREIGN KEY (character_1) REFERENCES characters (id) ON DELETE CASCADE,
     FOREIGN KEY (character_2) REFERENCES characters (id) ON DELETE CASCADE
 );
-
-/* Add some default data */
-INSERT INTO channels_categories (name, is_persistent, min_members, max_members) VALUES ('world', TRUE, NULL, NULL);
-INSERT INTO channels_categories (name, is_persistent, min_members, max_members) VALUES ('whisper', TRUE, 2, 2);
-INSERT INTO channels_categories (name, is_persistent, min_members, max_members) VALUES ('party', FALSE, 2, 10);
-INSERT INTO channels_categories (name, is_persistent, min_members, max_members) VALUES ('village', TRUE, 1, NULL);
 
 /* Add a default world channel */
 INSERT INTO channels (category) VALUES (1);
