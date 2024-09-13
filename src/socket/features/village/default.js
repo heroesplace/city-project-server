@@ -1,7 +1,5 @@
 import db from '../../../database/postgresql/index.js'
-import { VillageError } from '../../errors.js'
-
-import { Channel } from '../../features/chat/channel.js'
+import { VillageError } from './errors.js'
 
 class Village {
   constructor(socketSession, founderId, name) {

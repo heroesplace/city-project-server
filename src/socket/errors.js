@@ -17,25 +17,6 @@ class DisplayableError extends Error {
   }
 }
 
-class VillageError extends DisplayableError {
-  static types = [
-    'VILLAGE_NOT_FOUND',
-    'VILLAGE_NAME_TAKEN',
-    'ALREADY_VILLAGER',
-    'EMPTY_CHART',
-  ]
-}
-
-class CharacterError extends DisplayableError {
-  static types = [
-    'CHARACTER_NOT_FOUND',
-    'IS_VILLAGE_MEMBER',
-    'EMPTY_CHARACTER_NAME'
-  ]
-}
-
 export {
-  DisplayableError,
-  VillageError,
-  CharacterError
+  DisplayableError
 }

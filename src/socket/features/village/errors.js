@@ -1,13 +1,15 @@
 import { DisplayableError } from '../../errors.js'
 
 // Types work as intended
-class VillageErrors extends DisplayableError {
+class VillageError extends DisplayableError {
   static types = [
-    'ALREADY_MEMBER',
-    'EMPTY_CHART'
+    'VILLAGE_NOT_FOUND',
+    'VILLAGE_NAME_TAKEN',
+    'ALREADY_VILLAGER',
+    'EMPTY_CHART',
   ]
 }
 
 export {
-  MailError
+  VillageError
 }

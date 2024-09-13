@@ -1,6 +1,6 @@
 import db from '../../../database/postgresql/index.js'
 
-import { CharacterError } from '../../errors.js'
+import { CharacterError } from './errors.js'
 
 class Character {
   static async resolve(character) {
