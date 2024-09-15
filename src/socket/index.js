@@ -17,8 +17,6 @@ class SocketSession {
   async getCharacter() {
     const characterId = this.manager.getCharacterIdBySessionId(this.socket.id)
 
-    console.log("id", characterId)
-
     return await Character.resolve(characterId)
   }
 }

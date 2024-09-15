@@ -23,16 +23,15 @@ const onPullMails = async ({ socketSession }) => {
 }
 
 const onReplyMail = async ({ socketSession, content }) => {
-  // TODO: URGENT vérifier que le mail est adressé au mec qui reply
   const { mailId, answer } = content
 
   try {
+    const mail = await MailFactory.getMailById(socketSession, mailId)
 
     if (mail.receiverId !== await socketSession.getCharacter()) {
       throw new MailError('REPLY_NOT_ALLOWED')
     }
 
-    const mail = await MailFactory.getMailById(socketSession, mailId)
     await mail.replyMail(answer)
   } catch (e) {
     console.log(e)
