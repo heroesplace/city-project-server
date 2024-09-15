@@ -7,6 +7,8 @@ class VillageError extends DisplayableError {
     'VILLAGE_NAME_TAKEN',
     'ALREADY_VILLAGER',
     'EMPTY_CHART',
+    'NOT_ALLOWED_TO_SEND_INVITE',
+    'NOT_ALLOWED_TO_RECEIVE_INVITE',
   ]
 }
 

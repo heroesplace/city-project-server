@@ -56,4 +56,32 @@ class Village {
   }
 }
 
-export { Village }
+class Chart {
+  static async pullChartMembers(socket, senderId) {
+    const r = await db.query('SELECT name, status FROM charts JOIN characters ON receiver_id = characters.id WHERE sender_id = $1', [senderId])
+
+    socket.emit('pull_chart_members', r.rows)
+  }
+
+  // Cette fonction vérifie si un joueur est autorisé à envoyer une invitation
+  // - Il ne doit pas être dans un village
+  // - Il ne doit pas être invité dans une chart en cours
+  static async isAllowedToSendInvite(characterId) {
+    const r0 = await db.query('SELECT id FROM villages_members WHERE character_id = $1', [characterId])
+    const r1 = await db.query('SELECT id FROM charts WHERE receiver_id = $1 AND status = 1', [characterId])
+
+    return (r0.rows.length == 0 && r1.rows.length == 0)
+  }
+
+  // Cette fonction vérifie si un joueur est autorisé à recevoir une invitation
+  // - Il ne doit pas être dans un village
+  // - Il ne doit pas être en train d'inviter des joueurs dans une chart
+  static async isAllowedToReceiveInvite(characterId) {
+    const r0 = await db.query('SELECT id FROM villages_members WHERE character_id = $1', [characterId])
+    const r1 = await db.query('SELECT id FROM charts WHERE sender_id = $1', [characterId])
+
+    return (r0.rows.length == 0 && r1.rows.length == 0)
+  }
+}
+
+export { Village, Chart }

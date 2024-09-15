@@ -1,6 +1,5 @@
-import { onFoundVillage } from './features/village/index.js'
+import { onFoundVillage, onPullChartMembers } from './features/village/index.js'
 import { onSendMail, onPullMails, onReplyMail } from './features/mail/index.js'
-import { onPullChartMembers } from './features/village/chart.js'
 
 const events = {
   send_mail: onSendMail,

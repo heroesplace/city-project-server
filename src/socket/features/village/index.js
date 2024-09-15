@@ -1,4 +1,4 @@
-import { Village } from './default.js'
+import { Village, Chart } from './default.js'
 
 const onFoundVillage = async ({ socketSession, content }) => {
   try {
@@ -10,6 +10,13 @@ const onFoundVillage = async ({ socketSession, content }) => {
   }
 }
 
+const onPullChartMembers = async ({ socketSession }) => {
+  const senderId = await socketSession.getCharacter()
+
+  await Chart.pullChartMembers(socketSession.socket, senderId)
+}
+
 export {
-  onFoundVillage
+  onFoundVillage,
+  onPullChartMembers
 }

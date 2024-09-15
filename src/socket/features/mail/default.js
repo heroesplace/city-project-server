@@ -1,6 +1,8 @@
 import db from '../../../database/postgresql/index.js'
 import { Character } from '../character/default.js'
 import { MailError } from './errors.js'
+import { Chart } from '../village/default.js'
+import { VillageError } from '../village/errors.js'
 
 class Mail {
   constructor(session, senderId, receiverId, category) {
@@ -41,7 +43,9 @@ class MailChart extends Mail {
   }
 
   async sendMail() {
-    // TODO: IS VILLAGE MEMBER
+    if (!await Chart.isAllowedToSendInvite(this.senderId)) throw new VillageError('NOT_ALLOWED_TO_SEND_INVITE')
+    if (!await Chart.isAllowedToReceiveInvite(this.receiverId)) throw new VillageError('NOT_ALLOWED_TO_RECEIVE_INVITE')
+
     const r = await db.query('SELECT id FROM charts WHERE sender_id = $1 AND receiver_id = $2', [this.senderId, this.receiverId])
 
     if (r.rows.length !== 0) throw new MailError('ALREADY_INVITED')

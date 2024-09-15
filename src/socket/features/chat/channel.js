@@ -12,30 +12,30 @@ class Channel {
       console.log(error)
     }
   }
-}
 
-const joinChannel = async (channelId, characterId) => {
-  try {
-    await db.query('INSERT INTO channels_members (channel_id, character_id) VALUES ($1, $2)', [channelId, characterId])
+  static async joinChannel(channelId, characterId) {
+    try {
+      await db.query('INSERT INTO channels_members (channel_id, character_id) VALUES ($1, $2)', [channelId, characterId])
 
-    console.log(`[socket] Character ${characterId} joined channel ${channelId}`)
-  } catch (error) {
-    console.log(error)
+      console.log(`[socket] Character ${characterId} joined channel ${channelId}`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  static async deleteChannel(channelId) {
+    try {
+      await db.query('DELETE FROM channels WHERE id = $1', [channelId])
+
+      console.log(`[socket] Channel ${channelId} supprimé.`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
-const deleteChannel = async (channelId) => {
-  try {
-    await db.query('DELETE FROM channels WHERE id = $1', [channelId])
 
-    console.log(`[socket] Channel ${channelId} supprimé.`)
-  } catch (error) {
-    console.log(error)
-  }
-}
 
 export {
-  deleteChannel,
-  joinChannel,
   Channel
 }
