@@ -41,7 +41,7 @@ CREATE TABLE charts (
 CREATE TABLE channels (
     id SERIAL PRIMARY KEY NOT NULL,
     category INTEGER NOT NULL,
-    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE channels_members (
