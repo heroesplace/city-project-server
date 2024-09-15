@@ -1,10 +1,25 @@
 import { Server } from 'socket.io'
 import { createAdapter } from '@socket.io/redis-streams-adapter'
 
-import { getAdapterClient } from '../../database/redis/index.js'
+import { getAdapterClient } from '../database/redis/index.js'
 import { events } from './events.js'
-import db from '../../database/postgresql/index.js'
-import auth from '../../auth.js'
+import auth from '../auth.js'
+
+import { Character } from './features/character/default.js'
+
+class SocketSession {
+  constructor(manager, io, socket) {
+    this.manager = manager
+    this.io = io
+    this.socket = socket
+  }
+
+  async getCharacter() {
+    const characterId = this.manager.getCharacterIdBySessionId(this.socket.id)
+
+    return await Character.resolve(characterId)
+  }
+}
 
 class SocketManager {
   constructor() {
@@ -14,9 +29,15 @@ class SocketManager {
 
   getSessions = () => this.sessions
 
-  getOthersSessions = (socket) => {
-    return Object.keys(this.sessions).filter(key => key !== socket.characterId.toString())
+  getSessionIdByCharacterId = (characterId) => this.sessions[characterId]
+  getSessionByCharacterId = (characterId) => this.io.sockets.sockets.get(this.sessions[characterId])
+
+  getCharacterIdBySessionId = (sessionId) => {
+    console.log('sessionId', this.sessions, sessionId)
+    return parseInt(Object.keys(this.sessions).find(key => this.sessions[key] === sessionId))
   }
+
+  getOthersSessions = (socket) => Object.keys(this.sessions).filter(key => key !== socket.characterId.toString())
 
   destroyPreviousSession(socket) {
     this.io.sockets.sockets.forEach((s) => {
@@ -26,32 +47,22 @@ class SocketManager {
       }
     })
 
-    this.sessions[socket.characterId] = socket.id
-
-    console.log('[socket] Sessions : ', this.sessions)
+    // console.log('[socket] Sessions : ', this.sessions)
   }
 
   async authSocketMiddleware(socket, next) {
     const header = socket.handshake.headers.authorization
 
-    if (!header) return next(new Error('no token'))
+    if (!header) return next(new Error('MISSING_TOKEN'))
 
-    if (!header.startsWith('Bearer ')) return next(new Error('invalid token'))
+    if (!header.startsWith('Bearer ')) return next(new Error('INVALID_TOKEN'))
 
     const token = header.substring(7)
 
     try {
       const decoded = await auth.verifyTokenAuthenticity(token)
-      const r = await db.query('SELECT accounts.id account_id, accounts.name account_name, characters.id character_id, characters.name character_name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.id = $1', [decoded.accountId])
 
-      const infos = r.rows[0]
-
-      socket.accountId = infos.account_id
-      socket.accountName = infos.account_name
-      socket.characterId = infos.character_id
-      socket.characterName = infos.character_name
-
-      socket.join(socket.characterId)
+      this.sessions[decoded.characterId] = socket.id
 
       next()
     } catch (err) {
@@ -82,13 +93,22 @@ class SocketManager {
 
       this.destroyPreviousSession(socket)
 
-      for (const [event, handler] of Object.entries(events)) {
-        socket.on(event, (content) => handler({ io: this.io, socket, content }))
-      }
-
-      socket.conn.on("close", (reason) => {
-        // Character dispawn
+      socket.onAny((eventName, ...args) => {
+        console.log(`[socket] Event ${eventName} reçu avec les arguments ${args}.`)
       })
+
+      for (const [event, handler] of Object.entries(events)) {
+        socket.on(event, (content) => {
+          try {
+            handler({
+              socketSession: new SocketSession(this, this.io, socket),
+              content: content
+            })
+          } catch (e) {
+            console.log(e)
+          }
+        })
+      }
     })
   }
 }

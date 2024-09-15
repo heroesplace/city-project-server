@@ -17,7 +17,18 @@ CREATE TABLE characters (
     CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
 );
 
-CREATE TABLE invites (
+CREATE TABLE mails (
+    id SERIAL PRIMARY KEY NOT NULL,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    category varchar(20) NOT NULL,
+    opened BOOLEAN DEFAULT FALSE,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES characters (id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES characters (id) ON DELETE CASCADE
+);
+
+CREATE TABLE charts (
     id SERIAL PRIMARY KEY NOT NULL,
     sender_id INTEGER NOT NULL,
     receiver_id INTEGER NOT NULL,
@@ -27,20 +38,10 @@ CREATE TABLE invites (
     FOREIGN KEY (receiver_id) REFERENCES characters (id) ON DELETE CASCADE
 );
 
-CREATE TABLE channels_categories (
-	id SERIAL PRIMARY KEY NOT NULL,
-	name VARCHAR(255) NOT NULL,
-	is_persistent BOOLEAN DEFAULT FALSE,
-	min_members INTEGER DEFAULT 1,
-	max_members INTEGER,
-	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE channels (
     id SERIAL PRIMARY KEY NOT NULL,
     category INTEGER NOT NULL,
-    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category) REFERENCES channels_categories (id)
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE channels_members (
@@ -56,7 +57,7 @@ CREATE TABLE villages (
     id SERIAL PRIMARY KEY NOT NULL,
     name varchar(20) NOT NULL UNIQUE,
     founder_id INTEGER NOT NULL,
-    channel_id INTEGER NOT NULL,
+    channel_id INTEGER,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (founder_id) REFERENCES characters (id),
     FOREIGN KEY (channel_id) REFERENCES channels (id)
@@ -65,7 +66,7 @@ CREATE TABLE villages (
 CREATE TABLE villages_members (
     id SERIAL PRIMARY KEY NOT NULL,
     village_id INTEGER NOT NULL,
-    character_id INTEGER NOT NULL,
+    character_id INTEGER NOT NULL UNIQUE,
     role INTEGER DEFAULT 0,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (village_id) REFERENCES villages (id) ON DELETE CASCADE,
@@ -93,3 +94,5 @@ CREATE TABLE channels_whisper  (
     FOREIGN KEY (character_2) REFERENCES characters (id) ON DELETE CASCADE
 );
 
+/* Add a default world channel */
+INSERT INTO channels (category) VALUES (1);

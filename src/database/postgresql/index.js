@@ -4,7 +4,8 @@ import dotenv from 'dotenv'
 import {
   UniqueConstraintError,
   RequestSyntaxError,
-  UndefinedTableError
+  UndefinedTableError,
+  ForeignKeyError
 } from './errors.js'
 
 dotenv.config()
@@ -27,6 +28,7 @@ const migrateDatabase = async () => {
     databaseUrl: process.env.DATABASE_URL,
     direction: 'up',
     verbose: true,
+    migrationsTable: 'migrations'
   }).catch(err => {
     console.error('[db-postgres] Error migrating database:', err)
     process.exit(-1)
@@ -42,6 +44,8 @@ const getErrorType = (code) => {
       return new RequestSyntaxError()
     case '42P01':
       return new UndefinedTableError()
+    case '23503':
+      return new ForeignKeyError()
     default:
       return new Error(code)
   }

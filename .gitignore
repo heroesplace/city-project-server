@@ -3,3 +3,4 @@ config/*/*
 !config/*/.gitkeep
 .env
 private
+migrations/*.dev.sql

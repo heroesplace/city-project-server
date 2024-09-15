@@ -1,6 +1,6 @@
-import auth from './auth.js'
-import db from './database/postgresql/index.js'
-import { UniqueConstraintError } from './database/postgresql/errors.js'
+import auth from '../../auth.js'
+import db from '../../database/postgresql/index.js'
+import { UniqueConstraintError } from '../../database/postgresql/errors.js'
 
 // Fonction pour gérer l'inscription
 async function register (accountName, characterName, emailAddress, password) {
@@ -46,13 +46,12 @@ async function login (accountName, password) {
 
   if (!passwordMatches) throw new Error('WRONG_PASSWORD')
 
-  const r2 = await db.query('SELECT characters.name name FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.name = $1', [accountName])
+  const r2 = await db.query('SELECT characters.id id FROM characters JOIN accounts ON account_id = accounts.id WHERE accounts.name = $1', [accountName])
 
   const characters = r2.rows[0]
 
   return auth.generateToken({
-    accountId: account.id,
-    characterName: characters.name
+    characterId: characters.id
   })
 }
 
